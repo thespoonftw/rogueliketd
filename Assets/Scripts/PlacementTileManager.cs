@@ -10,7 +10,10 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
     [SerializeField] GameObject rightTile;
     [SerializeField] GameObject straightTile;
 
-    private PlacementTileView[,] tileArray;
+    private PlacementTile[,] placementTileArray;
+    private Tile[,] tileArray;
+
+
     private GameObject highlightPlacementTile;
     private int rotationIndex = 0;
     private bool isPlacingTileEnabled = false;
@@ -22,16 +25,18 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
     private void Start() {
 
         var n = Constants.numberOfTiles;
-        tileArray = new PlacementTileView[n, n];
+        placementTileArray = new PlacementTile[n, n];
+        tileArray = new Tile[n, n];
+
         var halfWidth = (n - 1) / 2;
 
         for (int x = 0; x < n; x++) {
             for (int y = 0; y < n; y++) {
                 var go = Instantiate(placementTilePrefab, new Vector3((x - halfWidth) * Constants.tileWidth, (y - halfWidth) * Constants.tileWidth), Quaternion.identity, transform);
                 go.name = "Tile[" + x + "," + y + "]";
-                var view = go.GetComponent<PlacementTileView>();
+                var view = go.GetComponent<PlacementTile>();
                 view.Initialise(x, y);
-                tileArray[x, y] = view;
+                placementTileArray[x, y] = view;
             }
         }
     }
@@ -58,16 +63,33 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
     public void TryHighlightPlacementTile(int x, int y) {
         if (!isPlacingTileEnabled) { return; }
         var rotation = Quaternion.Euler(0, 0, rotationIndex * 90);
-        highlightPlacementTile = Instantiate(GetTileType(tileTypeIndex), tileArray[x, y].transform.position + new Vector3(0, 0, 1), rotation, transform);
-        tileArray[x, y].SetColour(true);
+        highlightPlacementTile = Instantiate(GetTileType(tileTypeIndex), placementTileArray[x, y].transform.position + new Vector3(0, 0, 1), rotation, transform);
+        if (IsValidTilePlacement(x,y))
+        {
+            placementTileArray[x, y].SetColour(PlacementTileColor.green);
+            isValidLocation = true;
+        }
+        else
+        {
+            placementTileArray[x, y].SetColour(PlacementTileColor.red);
+            isValidLocation = false;
+        }
+        
         highlightedX = x;
         highlightedY = y;
-        isValidLocation = true;
+        
+    }
+
+    private bool IsValidTilePlacement(int x, int y)
+    {
+        if (tileArray[x,y] != null) { return false; }
+        if (tileArray[x + 1, y] == null && tileArray[x - 1, y] == null && tileArray[x, y + 1] == null && tileArray[x, y - 1] == null) { return false; }
+        return true;
     }
     
     public void UnHighlightPlacementTile(int x, int y) {
         Destroy(highlightPlacementTile);
-        tileArray[x, y].SetColour(false);
+        placementTileArray[x, y].SetColour(PlacementTileColor.clear);
     }
 
     public void StartPlacingTile(int tileIndex) {
@@ -92,7 +114,9 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
     }
 
     public void ForcePlaceTile(int x, int y, int tileIndex, int rotation = 0) {        
-        var currentTile = tileArray[x, y];
-        var newTile = Instantiate(GetTileType(tileIndex), currentTile.transform.position, Quaternion.Euler(0, 0, rotation * 90), transform);       
+        var currentTile = placementTileArray[x, y];
+        var go = Instantiate(GetTileType(tileIndex), currentTile.transform.position, Quaternion.Euler(0, 0, rotation * 90), transform);
+        var tile = go.GetComponent<Tile>();
+        tileArray[x, y] = tile;
     }
 }
