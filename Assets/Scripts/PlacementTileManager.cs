@@ -12,15 +12,15 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
 
     private PlacementTile[,] placementTileArray;
     private Tile[,] tileArray;
-    private GameObject placingTilePrefab;
+    private GameObject tileToBePlaced;
 
 
     private GameObject highlightPlacementTile;
-    private int rotationIndex = 0;
     private bool isPlacingTileEnabled = false;
     private int highlightedX;
     private int highlightedY;
     private bool isValidLocation = false;
+    private int rotationIndex;
 
     private void Start() {
 
@@ -54,8 +54,9 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
 
     public void TryHighlightPlacementTile(int x, int y) {
         if (!isPlacingTileEnabled) { return; }
-        var rotation = Quaternion.Euler(0, 0, rotationIndex * 90);
-        highlightPlacementTile = Instantiate(placementTilePrefab, placementTileArray[x, y].transform.position + new Vector3(0, 0, 1), rotation, transform);
+        highlightPlacementTile = Instantiate(tileToBePlaced, placementTileArray[x, y].transform.position + new Vector3(0, 0, 1), Quaternion.identity, transform);
+        var tile = highlightPlacementTile.GetComponent<Tile>();
+        tile.Init(rotationIndex);
         if (IsValidTilePlacement(x,y))
         {
             placementTileArray[x, y].SetColour(PlacementTileColor.green);
@@ -76,7 +77,7 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
         if (tileArray[x,y] != null) { return false; }
         if (tileArray[x + 1, y] == null && tileArray[x - 1, y] == null && tileArray[x, y + 1] == null && tileArray[x, y - 1] == null) { return false; }
 
-        var tile = placingTilePrefab.GetComponent<Tile>();
+        var tile = highlightPlacementTile.GetComponent<Tile>();
 
         if (tileArray[x + 1, y] != null) {
             if (tileArray[x + 1, y].GetComponent<Tile>().IsLeftPath != tile.IsRightPath) { return false; }
@@ -101,10 +102,10 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
 
     public void StartPlacingTile(int tileIndex) {
         switch (tileIndex) {
-            case 0: placingTilePrefab = startTile; break;
-            case 1: placingTilePrefab = leftTile; break;
-            case 2: placingTilePrefab = straightTile; break;
-            case 3: placingTilePrefab = rightTile; break;
+            case 0: tileToBePlaced = startTile; break;
+            case 1: tileToBePlaced = leftTile; break;
+            case 2: tileToBePlaced = straightTile; break;
+            case 3: tileToBePlaced = rightTile; break;
         }
         isPlacingTileEnabled = true;
         rotationIndex = 0;
@@ -112,15 +113,14 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
 
     public void UserPlaceTile(int x, int y) {
         if (!isPlacingTileEnabled || !isValidLocation) { return; }
-        ForcePlaceTile(x, y, placingTilePrefab, rotationIndex);
+        ForcePlaceTile(x, y, tileToBePlaced, rotationIndex);
         isPlacingTileEnabled = false;
         CanvasManager.Instance.ShowTileChooser();
         isValidLocation = false;
     }
 
     public void RotateTile() {
-        rotationIndex++;
-        if (rotationIndex == 4) { rotationIndex = 0; }
+        rotationIndex = (rotationIndex + 1) % 4;
         Destroy(highlightPlacementTile);
         TryHighlightPlacementTile(highlightedX, highlightedY);
     }
@@ -129,6 +129,7 @@ public class PlacementTileManager : Singleton<PlacementTileManager>
         var currentTile = placementTileArray[x, y];
         var go = Instantiate(tilePrefab, currentTile.transform.position, Quaternion.Euler(0, 0, rotation * 90), transform);
         var tile = go.GetComponent<Tile>();
+        tile.Init(rotationIndex);
         tileArray[x, y] = tile;
     }
 }
