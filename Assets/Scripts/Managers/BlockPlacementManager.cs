@@ -9,12 +9,12 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
     [SerializeField] Transform blockPreview3;
 
     private BlockDataLoader blockDataLoader = new BlockDataLoader();
-    private Grid GameGrid => GameManager.Instance.gameGrid;
+    private Grid GameGrid => GameManager.Instance.GameGrid;
      
     private BlockData placingBlockData;
     private int rotationIndex = 0;
     private bool isPlacingBlockEnabled = false;
-    private Vector2Int? highlightedPosition;
+    private Block highlightedBlock;
 
     public void Init() {
         CreatePreviewBlock(1, blockPreview1);
@@ -26,25 +26,22 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         if (Input.GetMouseButtonUp(1)) {
             RotateBlock();
         }
-        if (Input.GetMouseButtonUp(0) && highlightedPosition != null) {
-            var pos = (Vector2Int)highlightedPosition;
-            PlaceBlockByUser(pos.x, pos.y);
+        if (Input.GetMouseButtonUp(0) && highlightedBlock != null) {
+            PlaceBlockByUser(highlightedBlock);
         }
     }
 
-    public void TryHighlightBlock(int x, int y) {
+    public void TryHighlightBlock(Block block) {
         if (!isPlacingBlockEnabled) { return; }
-        var block = GameGrid.GetBlock(x, y);
         if (!block.IsPlaced) {
             block.LoadData(placingBlockData, rotationIndex);
         }
         var isValid = block.IsValidBlockPlacement();
         block.SetHighlight(isValid ? Colour.green : Colour.red);
-        highlightedPosition = new Vector2Int(x, y);
+        highlightedBlock = block;
     }
 
-    public void RemoveHighlight(int x, int y) {
-        var block = GameGrid.GetBlock(x, y);
+    public void RemoveHighlight(Block block) {
         block.SetHighlight(Colour.clear);
         if (!block.IsPlaced) {
             block.ClearBlock();
@@ -55,21 +52,18 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         placingBlockData = blockDataLoader.GetData(blockIndex);
         isPlacingBlockEnabled = true;
         rotationIndex = 0;
-        highlightedPosition = null;
+        highlightedBlock = null;
     }
 
     public void RotateBlock() {
-        if (highlightedPosition == null) { return; }
+        if (highlightedBlock == null) { return; }
         rotationIndex = (rotationIndex + 1) % 4;
-        var pos = (Vector2Int)highlightedPosition;
-        var block = GameGrid.GetBlock(pos.x, pos.y);
-        if (!block.IsPlaced) { block.ClearBlock(); }
-        TryHighlightBlock(pos.x, pos.y);
+        if (!highlightedBlock.IsPlaced) { highlightedBlock.ClearBlock(); }
+        TryHighlightBlock(highlightedBlock);
     }
 
-    public void PlaceBlockByUser(int x, int y) {
+    public void PlaceBlockByUser(Block block) {
         if (!isPlacingBlockEnabled) { return; }
-        var block = GameGrid.GetBlock(x, y);
         if (!block.IsValidBlockPlacement()) { return; }
         block.FinishPlacingBlock();
         isPlacingBlockEnabled = false;

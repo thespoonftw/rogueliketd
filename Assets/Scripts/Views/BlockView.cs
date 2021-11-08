@@ -34,11 +34,11 @@ public class BlockView : MonoBehaviour {
     }
 
     private void OnMouseEnter() {
-        blockPlacer.TryHighlightBlock(model.X, model.Y);
+        blockPlacer.TryHighlightBlock(model);
     }
 
     private void OnMouseExit() {
-        blockPlacer.RemoveHighlight(model.X, model.Y);
+        blockPlacer.RemoveHighlight(model);
     }
 
     private void Destroy() {

@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    public Grid gameGrid;
+    public Grid GameGrid { get; private set; }
+    public GridView GameGridView { get; private set; }
 
     [SerializeField] GameObject travellerPrefab;
-    [SerializeField] GridView gridView;
 
     public void Start() {
-        gameGrid = new Grid(Constants.GAME_GRID_SIZE);
-        gridView.Init(gameGrid);
+        GameGrid = new Grid(Constants.GAME_GRID_SIZE);
+        var go = new GameObject("Game Grid");
+        GameGridView = go.AddComponent<GridView>();
+        GameGridView.Init(GameGrid);
         BlockPlacementManager.Instance.Init();
 
         var halfWidth = (Constants.GAME_GRID_SIZE - 1) / 2;

@@ -24,6 +24,7 @@ public class CanvasManager : Singleton<CanvasManager>
     }
 
     public void StartPlacingStructure() {
+        StructurePlacementManager.Instance.StartPlacingStructure();
         SetState(CanvasState.structurePlacing);
     }
 
@@ -50,6 +51,7 @@ public class CanvasManager : Singleton<CanvasManager>
     }
 
     public void FinishStructurePlacing() {
+        StructurePlacementManager.Instance.StopPlacingStructure();
         SetState(CanvasState.standard);
     }
 

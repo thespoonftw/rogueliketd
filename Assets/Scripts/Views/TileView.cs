@@ -17,6 +17,7 @@ public class TileView : MonoBehaviour {
         model.OnPath += ShowPath;
         model.OnClear += ClearPath;
         structurePlacer = StructurePlacementManager.Instance;
+        model.OnHighlightColour += SetHighlightColour;
     }
 
     public void SetHighlightColour(Colour color) {
@@ -25,11 +26,11 @@ public class TileView : MonoBehaviour {
     }
 
     private void OnMouseEnter() {
-        structurePlacer.TryHighlightTile(model.X, model.Y);
+        structurePlacer.TryHighlightTile(model);
     }
 
     private void OnMouseExit() {
-        structurePlacer.RemoveHighlight(model.X, model.Y);
+        structurePlacer.RemoveHighlight(model);
     }
 
     public void ShowPath() {

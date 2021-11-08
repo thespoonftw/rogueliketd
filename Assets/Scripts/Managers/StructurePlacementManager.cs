@@ -6,32 +6,40 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
 {
     [SerializeField] GameObject structure;
 
-    private Grid GameGrid => GameManager.Instance.gameGrid;
+    private Grid GameGrid => GameManager.Instance.GameGrid;
     private bool isPlacingStructureEnabled;
-    private Vector2Int? highlightedPosition;
+    private Tile highlightedTile;
 
     private void Update() {
-        if (Input.GetMouseButtonUp(0) && highlightedPosition != null) {
-            var pos = (Vector2Int)highlightedPosition;
-            PlaceStructureByUser(pos.x, pos.y);
+        if (Input.GetMouseButtonUp(0) && highlightedTile != null) {
+            PlaceStructureByUser(highlightedTile);
         }
     }
 
-    public void TryHighlightTile(int x, int y) {
+    public void StartPlacingStructure() {
+        isPlacingStructureEnabled = true;
+    }
+
+    public void StopPlacingStructure() {
+        isPlacingStructureEnabled = false;
+        highlightedTile = null;
+    }
+
+    public void TryHighlightTile(Tile tile) {
         if (!isPlacingStructureEnabled) { return; }
-        var tile = GameGrid.GetTile(x, y);
+        highlightedTile = tile;
         tile.SetHighlight(Colour.green);
     }
 
-    public void RemoveHighlight(int x, int y) {
-        var tile = GameGrid.GetTile(x, y);
+    public void RemoveHighlight(Tile tile) {
         tile.SetHighlight(Colour.clear);
+        highlightedTile = null;
     }
 
-    public void PlaceStructureByUser(int x, int y) {
+    public void PlaceStructureByUser(Tile tile) {
         if (!isPlacingStructureEnabled) { return; }
-        var tile = GameGrid.GetTile(x, y);
         if (!tile.IsValidTilePlacement()) { return; }
-        Instantiate(structure, GameGrid.Ge)
+        var pos = GameManager.Instance.GameGridView.GetTilePosition(tile.X, tile.Y);
+        Instantiate(structure, pos, Quaternion.identity, transform);
     }
 }

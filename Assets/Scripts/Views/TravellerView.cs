@@ -10,7 +10,7 @@ public class TravellerView : MonoBehaviour {
     private float timeRemaining;
 
     public void Init() {
-        model = new Traveller(GameManager.Instance.gameGrid);
+        model = new Traveller(GameManager.Instance.GameGrid);
         model.OnTileUpdate += UpdatePosition;
         UpdatePosition();
     }
