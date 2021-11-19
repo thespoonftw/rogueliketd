@@ -41,6 +41,10 @@ public class BlockView : MonoBehaviour {
         blockPlacer.RemoveHighlight(model);
     }
 
+    public void EnableHitbox(bool isActive) {
+        GetComponent<BoxCollider2D>().enabled = isActive;
+    }
+
     private void Destroy() {
         model.OnClear -= Destroy;
         model.OnHighlightColour -= SetHighlightColour;

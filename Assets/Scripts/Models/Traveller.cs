@@ -6,26 +6,20 @@ using UnityEngine;
 public class Traveller {
 
     private Grid grid;
-    private Tile prevTile;
-    public Tile CurrentTile { get; private set; }
-
-    public event Action OnTileUpdate;
+    public Tile PrevTile { get; private set; }
+    public Tile NextTile { get; private set; }
 
 
-    public Traveller(Grid grid) {
+    public Traveller(Grid grid, Block startBlock) {
         this.grid = grid;
-        CurrentTile = grid.GetBlock(4, 4).GetStartPath();
+        NextTile = startBlock.GetStartPath();
+        MoveToNextTile();
     }
 
-    public void Tick() {
-        var prev = prevTile;
-        prevTile = CurrentTile;
-        SetPath(CurrentTile.GetNextPath(prev));
-    }
-
-    private void SetPath(Tile tile) {
-        CurrentTile = tile;
-        OnTileUpdate?.Invoke();
+    public void MoveToNextTile() {
+        var prev = PrevTile;
+        PrevTile = NextTile;
+        NextTile = NextTile.GetNextPath(prev);
     }
     
 }

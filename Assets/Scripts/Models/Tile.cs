@@ -7,11 +7,13 @@ using UnityEngine;
 public class Tile {
 
     public int X { get; private set; }
-    public int Y { get; private set; }
+    public int Z { get; private set; }
 
     public bool IsPath { get; private set; }
 
-    private Grid grid;
+    private readonly Grid grid;
+    private Structure occupyingStructure;
+    private Block block;
 
     public event Action OnClear;
     public event Action OnPath;
@@ -19,8 +21,9 @@ public class Tile {
 
     public Tile(int x, int y, Grid grid) {
         X = x;
-        Y = y;
+        Z = y;
         this.grid = grid;
+        block = grid.GetBlock(x / Constants.BLOCK_SIZE, y / Constants.BLOCK_SIZE);
     }
 
     public void CreatePath() {
@@ -38,15 +41,15 @@ public class Tile {
     }
 
     public bool IsValidTilePlacement() {
-        return !IsPath;
+        return !IsPath && occupyingStructure == null && block.IsPlaced;
     }
 
     public Tile GetAdjacentTile(Direction side) {
         switch (side) {
-            case Direction.south: return grid.GetTile(X, Y - 1);
-            case Direction.north: return grid.GetTile(X, Y + 1);
-            case Direction.east: return grid.GetTile(X + 1, Y);
-            case Direction.west: return grid.GetTile(X - 1, Y);
+            case Direction.south: return grid.GetTile(X, Z - 1);
+            case Direction.north: return grid.GetTile(X, Z + 1);
+            case Direction.east: return grid.GetTile(X + 1, Z);
+            case Direction.west: return grid.GetTile(X - 1, Z);
         }
         return null;
     }
@@ -62,6 +65,10 @@ public class Tile {
 
     public void SetHighlight(Colour highlightColour) {
         OnHighlightColour?.Invoke(highlightColour);
+    }
+
+    public void SetOccupyingStructure(Structure s) {
+        occupyingStructure = s;
     }
 
 }

@@ -1,31 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum CanvasState {
     standard,
     blockChoosing,
     blockPlacing,
     structurePlacing,
+    structureChoosing,
 }
 
 public class CanvasManager : Singleton<CanvasManager>
 {
-    [SerializeField] GameObject standard;
-    [SerializeField] GameObject blockChooser;
-    [SerializeField] GameObject blockPlacing;
-    [SerializeField] GameObject structurePlacing;
+    [SerializeField] GameObject standardToggle;
+    [SerializeField] GameObject blockChooserToggle;
+    [SerializeField] GameObject blockPlacingToggle;
+    [SerializeField] GameObject structurePlacingToggle;
+    [SerializeField] GameObject structureChoosingToggle;
+    [SerializeField] Text goldText;
 
     public void SetState(CanvasState state) {
-        standard.SetActive(state == CanvasState.standard);
-        blockChooser.SetActive(state == CanvasState.blockChoosing);
-        blockPlacing.SetActive(state == CanvasState.blockPlacing);
-        structurePlacing.SetActive(state == CanvasState.structurePlacing);
-    }
-
-    public void StartPlacingStructure() {
-        StructurePlacementManager.Instance.StartPlacingStructure();
-        SetState(CanvasState.structurePlacing);
+        standardToggle.SetActive(state == CanvasState.standard);
+        blockChooserToggle.SetActive(state == CanvasState.blockChoosing);
+        blockPlacingToggle.SetActive(state == CanvasState.blockPlacing);
+        structurePlacingToggle.SetActive(state == CanvasState.structurePlacing);
+        structureChoosingToggle.SetActive(state == CanvasState.structureChoosing);
     }
 
     public void StartChoosingBlock() {
@@ -42,7 +42,7 @@ public class CanvasManager : Singleton<CanvasManager>
     }
 
     public void BlockCancelled() {
-        BlockPlacementManager.Instance.CancelPlacement();
+        BlockPlacementManager.Instance.StopBlockPlacement();
         SetState(CanvasState.blockChoosing);
     }
 
@@ -52,7 +52,20 @@ public class CanvasManager : Singleton<CanvasManager>
 
     public void FinishStructurePlacing() {
         StructurePlacementManager.Instance.StopPlacingStructure();
+        SetState(CanvasState.structureChoosing);
+    }
+
+    public void StartStructureChoosing() {
+        StructureSelectionManager.Instance.StartSelection();
+        SetState(CanvasState.structureChoosing);
+    }
+
+    public void FinishStructureChoosing() {
         SetState(CanvasState.standard);
+    }
+
+    public void SetGoldText(int amount) {
+        goldText.text = "Gold: " + amount.ToString();
     }
 
 }

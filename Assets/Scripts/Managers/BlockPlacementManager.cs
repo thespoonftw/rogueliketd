@@ -8,10 +8,10 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
     [SerializeField] Transform blockPreview2;
     [SerializeField] Transform blockPreview3;
 
-    private BlockDataLoader blockDataLoader = new BlockDataLoader();
+    private BlockData blockDataLoader = new BlockData();
     private Grid GameGrid => GameManager.Instance.GameGrid;
      
-    private BlockData placingBlockData;
+    private BlockDataEntry placingBlockData;
     private int rotationIndex = 0;
     private bool isPlacingBlockEnabled = false;
     private Block highlightedBlock;
@@ -42,6 +42,7 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
     }
 
     public void RemoveHighlight(Block block) {
+        if (block == null) { return; }
         block.SetHighlight(Colour.clear);
         if (!block.IsPlaced) {
             block.ClearBlock();
@@ -53,6 +54,7 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         isPlacingBlockEnabled = true;
         rotationIndex = 0;
         highlightedBlock = null;
+        GameManager.Instance.GameGridView.SetGridHitboxMode(GridHitboxMode.Blocks);
     }
 
     public void RotateBlock() {
@@ -66,7 +68,7 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         if (!isPlacingBlockEnabled) { return; }
         if (!block.IsValidBlockPlacement()) { return; }
         block.FinishPlacingBlock();
-        isPlacingBlockEnabled = false;
+        StopBlockPlacement();
         CanvasManager.Instance.FinishPlacingBlock();
     }
 
@@ -88,7 +90,9 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         block.LoadData(blockDataLoader.GetData(dataIndex), 0);
     }
 
-    public void CancelPlacement() {
+    public void StopBlockPlacement() {
         isPlacingBlockEnabled = false;
+        RemoveHighlight(highlightedBlock);
+        GameManager.Instance.GameGridView.SetGridHitboxMode(GridHitboxMode.Off);
     }
 }

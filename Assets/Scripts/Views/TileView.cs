@@ -8,8 +8,9 @@ public class TileView : MonoBehaviour {
     private Tile model;
     private StructurePlacementManager structurePlacer;
 
-    [SerializeField] SpriteRenderer highlight;
-    [SerializeField] SpriteRenderer path;
+    [SerializeField] GameObject highlight;
+    [SerializeField] GameObject path;
+    [SerializeField] GameObject regular;
 
     public void Init(Tile model, GridView gridView) {
         this.model = model;
@@ -39,5 +40,9 @@ public class TileView : MonoBehaviour {
 
     public void ClearPath() {
         path.enabled = false;
+    }
+
+    public void EnableHitbox(bool isActive) {
+        GetComponent<BoxCollider2D>().enabled = isActive;
     }
 }

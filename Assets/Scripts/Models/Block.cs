@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class Block {
 
-    public BlockData data;
+    public BlockDataEntry data;
     public readonly int X;
-    public readonly int Y;
+    public readonly int Z;
     private readonly Grid grid;
 
     public event Action<Colour> OnHighlightColour;
@@ -17,17 +17,17 @@ public class Block {
 
     public bool IsPlaced { get; private set; }    
 
-    public Block(int x, int y, Grid grid) {
+    public Block(int x, int z, Grid grid) {
         this.X = x;
-        this.Y = y;
+        this.Z = z;
         this.grid = grid;
     }
 
-    public void LoadData(BlockData data, int rotationIndex) {
+    public void LoadData(BlockDataEntry data, int rotationIndex) {
         for (int x = 0; x < 7; x++) {
             for (int y = 0; y < 7; y++) {
                 if (data.IsPath(x, y, rotationIndex)) {
-                    grid.GetTile(X, Y, x, y).CreatePath();
+                    grid.GetTile(X, Z, x, y).CreatePath();
                 }
             }
         }
@@ -59,20 +59,21 @@ public class Block {
 
     public Block GetAdjacentBlock(Direction side) {
         switch (side) {
-            case Direction.south: return grid.GetBlock(X, Y - 1);
-            case Direction.north: return grid.GetBlock(X, Y + 1);
-            case Direction.east: return grid.GetBlock(X + 1, Y);
-            case Direction.west: return grid.GetBlock(X - 1, Y);
+            case Direction.south: return grid.GetBlock(X, Z - 1);
+            case Direction.north: return grid.GetBlock(X, Z + 1);
+            case Direction.east: return grid.GetBlock(X + 1, Z);
+            case Direction.west: return grid.GetBlock(X - 1, Z);
         }
         return null;
     }
 
     public bool IsValidBlockPlacement() {
         if (IsPlaced) { return false; }
-        var noNeighbours = Constants.ALL_DIRECTIONS.All(dir => !GetAdjacentBlock(dir).IsPlaced);
+        var noNeighbours = Constants.ALL_DIRECTIONS.All(dir => GetAdjacentBlock(dir) != null && !GetAdjacentBlock(dir).IsPlaced);
         if (noNeighbours) { return false; }
         foreach (var dir in Constants.ALL_DIRECTIONS) {
             var adj = GetAdjacentBlock(dir);
+            if (adj == null) { return false; }
             var t1 = GetTileAtEdge(dir);
             var t2 = adj.GetTileAtEdge(Tools.GetOppositeSide(dir));
             if (adj.IsPlaced && GetTileAtEdge(dir).IsPath != adj.GetTileAtEdge(Tools.GetOppositeSide(dir)).IsPath) { return false; }
