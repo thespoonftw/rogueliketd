@@ -1,62 +1,81 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class StructurePlacementManager : Singleton<StructurePlacementManager>
 {
-    [SerializeField] GameObject structurePrefab;
-
     private GameManager game;
     private bool isPlacingStructureEnabled;
-    private Tile highlightedTile;
+    private Tile focusedTile;
+    private bool isValid;
+    private StructureData structureData;
+    private int rotationIndex;
 
-    private StructureDataEntry placingStructure;
+    public event Action<Tile, bool, StructureData, int> OnFocusTile;
 
     public void Init() {
         game = GameManager.Instance;
+        Inputs.OnLeftMouseQuickRelease += UserTryPlaceStructure;
+        Inputs.OnRightMouseQuickRelease += RotateStructure;
     }
 
-    private void Update() {
-        if (Input.GetMouseButtonUp(0) && highlightedTile != null) {
-            UserTryPlaceStructure();
-        }
-    }
-
-    public void StartPlacingStructure(StructureDataEntry placingStructure) {
-        this.placingStructure = placingStructure;
+    public void StartPlacingStructure(StructureData placingStructure) {
+        this.structureData = placingStructure;
         isPlacingStructureEnabled = true;
-        game.GameGridView.SetGridHitboxMode(GridHitboxMode.Tiles);
+        rotationIndex = 0;
+        Raycaster.SetMode(RaycastMode.tiles);
     }
 
     public void StopPlacingStructure() {
-        RemoveHighlight(highlightedTile);
+        FocusTile(null);
         isPlacingStructureEnabled = false;
-        highlightedTile = null;
-        game.GameGridView.SetGridHitboxMode(GridHitboxMode.Off);
+        Raycaster.SetMode(RaycastMode.standard);
     }
 
-    public void TryHighlightTile(Tile tile) {
+    public bool IsValidPlacement(Tile focusedTile, StructureData data) {
+        var grid = GameManager.Instance.GameGrid;
+        var half = (Constants.BLOCK_SIZE - 1) / 2;
+        for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
+            for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
+                var coords = Tools.GetCoordsAfterRotationBlock(rotationIndex, x, z);
+                var placementRule = data.GetPathingRule(coords.x, coords.z);
+                if (placementRule == PathingRule.none) { continue; }
+                var tileToCheck = grid.GetTile(focusedTile.X - half + x, focusedTile.Z - half + z);
+                if (tileToCheck.IsOccupied) { return false; }
+                if (tileToCheck.Mode == TileMode.noBlock) { return false; }
+                if (placementRule == PathingRule.path && tileToCheck.Mode != TileMode.path) { return false; }
+                if (placementRule == PathingRule.buildable && tileToCheck.Mode != TileMode.available) { return false; }
+
+            }
+        }
+        return true;
+    }
+
+    public void FocusTile(Tile tile) {
+        if (!isPlacingStructureEnabled && tile != null) { return; }
+        focusedTile = tile;
+        if (tile != null) { isValid = IsValidPlacement(tile, structureData); }        
+        OnFocusTile?.Invoke(tile, isValid, structureData, rotationIndex);        
+    }
+
+    private void RotateStructure() {
+        rotationIndex = (rotationIndex + 1) % 4;
+        FocusTile(focusedTile);
+    }
+
+    private void UserTryPlaceStructure() {
+        if (focusedTile == null) { return; }
         if (!isPlacingStructureEnabled) { return; }
-        highlightedTile = tile;
-        var isValid = tile.IsValidTilePlacement();
-        tile.SetHighlight(isValid ? Colour.green : Colour.red);
-    }
-
-    public void RemoveHighlight(Tile tile) {
-        if (tile == null) { return; }
-        tile.SetHighlight(Colour.clear);
-        highlightedTile = null;
-    }
-
-    public void UserTryPlaceStructure() {
-        var tile = highlightedTile;
-        if (!isPlacingStructureEnabled) { return; }
-        if (!tile.IsValidTilePlacement()) { return; }
-        if (game.Gold < placingStructure.cost) { return; }
-        var pos = game.GameGridView.GetTilePosition(tile.X, tile.Z);
-        var go = Instantiate(structurePrefab, pos, Quaternion.identity, transform);
-        var structure = new Structure(tile);
-        game.ModifyGold(-placingStructure.cost);
-        TryHighlightTile(tile);
+        if (!isValid) { return; }
+        if (game.Gold < structureData.cost) { return; }
+        var pos = game.GameGridView.GetTilePosition(focusedTile.X, focusedTile.Z);
+        var go = Instantiate(Prefabs.Instance.structurePrefab, pos, Quaternion.identity, transform);
+        var view = go.GetComponent<StructureView>();
+        view.Init(structureData, rotationIndex);
+        var structure = new Structure(structureData, focusedTile, rotationIndex);
+        game.ModifyGold(-structureData.cost);
+        FocusTile(focusedTile);
     }
 }

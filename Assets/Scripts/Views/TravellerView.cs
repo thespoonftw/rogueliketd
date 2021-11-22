@@ -33,7 +33,7 @@ public class TravellerView : MonoBehaviour {
         if (model.NextTile == null) { return; }
         var prev = game.GameGridView.GetTilePosition(model.PrevTile);
         var next = game.GameGridView.GetTilePosition(model.NextTile);
-        //transform.rotation = Quaternion.LookRotation(next - prev, Vector3.back);
+        transform.rotation = Quaternion.LookRotation(next - prev, Vector3.up);
     }
 
     private void UpdatePosition() {

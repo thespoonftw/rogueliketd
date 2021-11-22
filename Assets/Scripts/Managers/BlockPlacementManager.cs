@@ -8,10 +8,9 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
     [SerializeField] Transform blockPreview2;
     [SerializeField] Transform blockPreview3;
 
-    private BlockData blockDataLoader = new BlockData();
     private Grid GameGrid => GameManager.Instance.GameGrid;
      
-    private BlockDataEntry placingBlockData;
+    private BlockData blockData;
     private int rotationIndex = 0;
     private bool isPlacingBlockEnabled = false;
     private Block highlightedBlock;
@@ -20,21 +19,14 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         CreatePreviewBlock(1, blockPreview1);
         CreatePreviewBlock(2, blockPreview2);
         CreatePreviewBlock(3, blockPreview3);
-    }
-
-    private void Update() {
-        if (Input.GetMouseButtonUp(1)) {
-            RotateBlock();
-        }
-        if (Input.GetMouseButtonUp(0) && highlightedBlock != null) {
-            PlaceBlockByUser(highlightedBlock);
-        }
+        Inputs.OnLeftMouseQuickRelease += TryPlaceBlockByUser;
+        Inputs.OnRightMouseQuickRelease += RotateBlock;
     }
 
     public void TryHighlightBlock(Block block) {
         if (!isPlacingBlockEnabled) { return; }
         if (!block.IsPlaced) {
-            block.LoadData(placingBlockData, rotationIndex);
+            block.PlaceTemporaryBlock(blockData, rotationIndex);
         }
         var isValid = block.IsValidBlockPlacement();
         block.SetHighlight(isValid ? Colour.green : Colour.red);
@@ -50,33 +42,33 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
     }
 
     public void StartPlacingBlock(int blockIndex) {
-        placingBlockData = blockDataLoader.GetData(blockIndex);
+        blockData = BlockDataSet.GetEntry(blockIndex);
         isPlacingBlockEnabled = true;
         rotationIndex = 0;
         highlightedBlock = null;
-        GameManager.Instance.GameGridView.SetGridHitboxMode(GridHitboxMode.Blocks);
+        Raycaster.SetMode(RaycastMode.blocks);
     }
 
     public void RotateBlock() {
-        if (highlightedBlock == null) { return; }
+        if (highlightedBlock == null || !isPlacingBlockEnabled) { return; }
         rotationIndex = (rotationIndex + 1) % 4;
         if (!highlightedBlock.IsPlaced) { highlightedBlock.ClearBlock(); }
         TryHighlightBlock(highlightedBlock);
     }
 
-    public void PlaceBlockByUser(Block block) {
+    public void TryPlaceBlockByUser() {
+        if (highlightedBlock == null) { return; }
         if (!isPlacingBlockEnabled) { return; }
-        if (!block.IsValidBlockPlacement()) { return; }
-        block.FinishPlacingBlock();
+        if (!highlightedBlock.IsValidBlockPlacement()) { return; }
         StopBlockPlacement();
+        highlightedBlock.PlaceBlock(blockData, rotationIndex);
         CanvasManager.Instance.FinishPlacingBlock();
     }
 
     public void PlaceBlockWithCode(int x, int y, int blockIndex, int rotation = 0) {
-        var blockData = blockDataLoader.GetData(blockIndex);
+        var blockData = BlockDataSet.GetEntry(blockIndex);
         var block = GameGrid.GetBlock(x, y);
-        block.LoadData(blockData, rotation);
-        block.FinishPlacingBlock();
+        block.PlaceBlock(blockData, rotation);
     }
 
     public void CreatePreviewBlock(int dataIndex, Transform previewTransform) {
@@ -87,12 +79,12 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         var gridView = gridgo.AddComponent<GridView>();
         gridView.Init(grid);
         var block = grid.GetBlock(0, 0);
-        block.LoadData(blockDataLoader.GetData(dataIndex), 0);
+        block.PlaceBlock(BlockDataSet.GetEntry(dataIndex), 0);
     }
 
     public void StopBlockPlacement() {
         isPlacingBlockEnabled = false;
         RemoveHighlight(highlightedBlock);
-        GameManager.Instance.GameGridView.SetGridHitboxMode(GridHitboxMode.Off);
+        Raycaster.SetMode(RaycastMode.standard);
     }
 }

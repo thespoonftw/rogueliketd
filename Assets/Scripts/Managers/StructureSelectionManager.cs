@@ -6,12 +6,11 @@ public class StructureSelectionManager : Singleton<StructureSelectionManager>
 {
     [SerializeField] List<ButtonStructureView> buttons;
 
-    private List<StructureDataEntry> availableStructures = new List<StructureDataEntry>();
+    private List<StructureData> availableStructures = new List<StructureData>();
 
     public void Init() {
-        var data = GameManager.Instance.StructureData;
-        availableStructures.Add(data.GetEntry(0));
-        availableStructures.Add(data.GetEntry(1));
+        availableStructures.Add(StructureDataSet.GetEntry(0));
+        availableStructures.Add(StructureDataSet.GetEntry(1));
     }
 
     public void StartSelection() {

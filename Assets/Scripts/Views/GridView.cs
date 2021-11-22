@@ -2,12 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GridHitboxMode {
-    Off,
-    Tiles,
-    Blocks,
-}
-
 public class GridView : MonoBehaviour
 {
     private BlockView[,] blockViews;
@@ -58,14 +52,5 @@ public class GridView : MonoBehaviour
 
     public Vector3 GetTilePosition(Tile tile) {
         return GetTilePosition(tile.X, tile.Z);
-    }
-
-    public void SetGridHitboxMode(GridHitboxMode mode) {
-        foreach (var v in blockViews) {
-            v.EnableHitbox(mode == GridHitboxMode.Blocks);
-        }
-        foreach (var v in tileViews) {
-            v.EnableHitbox(mode == GridHitboxMode.Tiles);
-        }
     }
 }

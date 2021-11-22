@@ -7,7 +7,6 @@ public class GameManager : Singleton<GameManager>
     public Grid GameGrid { get; private set; }
     public GridView GameGridView { get; private set; }
     public int Gold { get; private set; }
-    public StructureData StructureData { get; private set; }
 
     [SerializeField] GameObject travellerPrefab;
 
@@ -16,7 +15,8 @@ public class GameManager : Singleton<GameManager>
         var go = new GameObject("Game Grid");
         GameGridView = go.AddComponent<GridView>();
         GameGridView.Init(GameGrid);
-        StructureData = new StructureData();
+        StructureDataSet.Load();
+        BlockDataSet.Load();
 
         BlockPlacementManager.Instance.Init();
         StructurePlacementManager.Instance.Init();
@@ -29,7 +29,7 @@ public class GameManager : Singleton<GameManager>
 
         
 
-        ModifyGold(100);
+        ModifyGold(500);
     }
 
     public void SendTraveller() {

@@ -4,54 +4,38 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class BlockData {
+public class BlockDataSet {
 
-    private List<BlockDataEntry> list = new List<BlockDataEntry>();
+    private static List<BlockData> list = new List<BlockData>();
 
-    public BlockData() {
+    public static void Load() {
         var data = CsvLoader.LoadFile("Blocks");
-
-        for (int i = 0; i < data.Count; i += 8) {
-            var blockData = data.Skip(i).Take(8).ToList();
-            list.Add(new BlockDataEntry(blockData));
-        }
+        data.ForEach(d => list.Add(new BlockData(d)));
     }
 
-    public BlockDataEntry GetData(int index) {
+    public static BlockData GetEntry(int index) {
         return list[index];
     }
 }
 
-public class BlockDataEntry
-{
+public class BlockData {
+
     private bool[,] array = new bool[Constants.BLOCK_SIZE, Constants.BLOCK_SIZE];
 
-    public BlockDataEntry(List<List<string>> data) {
-        for (int x=0; x<7; x++) {
-            for (int y=0; y<7; y++) {
-                array[x, y] = (data[6 - y])[x] == "X";
+    public BlockData(List<string> line) {
+
+        var imageMap = ImageMaps.GetBlockMap(int.Parse(line[0]));
+
+        for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
+            for (int y = 0; y < Constants.BLOCK_SIZE; y++) {
+                var pixel = imageMap.GetPixel(x, y);
+                array[x, y] = pixel == Color.white;
             }
         }
     }
 
-    public bool IsPath(int x, int y, int rotationIndex = 0) {
-        switch (rotationIndex) {
-            case 0: return array[x, y];
-            case 1: return array[y, 6 - x];
-            case 2: return array[6 - x, 6 - y];
-            case 3: return array[6 - y, x];
-            default: return false;
-        }
+    public bool IsPath(int x, int z, int rotationIndex = 0) {
+        var coords = Tools.GetCoordsAfterRotationBlock(rotationIndex, x, z);
+        return array[coords.x, coords.z];
     }
-
-    public bool IsPathAtEdge(Direction side, int rotationIndex = 0) {
-        switch (side) {
-            case Direction.north: return IsPath(3, 6);
-            case Direction.east: return IsPath(6, 3);
-            case Direction.south: return IsPath(3, 0);
-            case Direction.west: return IsPath(0, 3);
-        }
-        return false;
-    }
-
 }

@@ -8,12 +8,12 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Highlight
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Tile
+  - Block
+  - Entity
   - 
   - 
   - 
@@ -40,4 +40,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Highlight
+    uniqueID: 4156891829
     locked: 0

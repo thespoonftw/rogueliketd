@@ -4,19 +4,25 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public enum TileMode {
+    noBlock,
+    available,
+    path,
+}
+
 public class Tile {
 
     public int X { get; private set; }
     public int Z { get; private set; }
 
-    public bool IsPath { get; private set; }
+    public TileMode Mode { get; private set; }
+    public bool IsOccupied { get { return occupyingStructure != null; } }
 
     private readonly Grid grid;
     private Structure occupyingStructure;
     private Block block;
 
-    public event Action OnClear;
-    public event Action OnPath;
+    public event Action<TileMode> OnTileMode;
     public event Action<Colour> OnHighlightColour;
 
     public Tile(int x, int y, Grid grid) {
@@ -26,22 +32,13 @@ public class Tile {
         block = grid.GetBlock(x / Constants.BLOCK_SIZE, y / Constants.BLOCK_SIZE);
     }
 
-    public void CreatePath() {
-        IsPath = true;
-        OnPath?.Invoke();
-    }
-
-    public void ClearTile() {
-        IsPath = false;
-        OnClear?.Invoke();
+    public void SetMode(TileMode mode) {
+        Mode = mode;
+        OnTileMode?.Invoke(mode);
     }
 
     public List<Tile> GetAdjacentTiles() {
         return Constants.ALL_DIRECTIONS.Select(dir => GetAdjacentTile(dir)).ToList();
-    }
-
-    public bool IsValidTilePlacement() {
-        return !IsPath && occupyingStructure == null && block.IsPlaced;
     }
 
     public Tile GetAdjacentTile(Direction side) {
@@ -55,7 +52,7 @@ public class Tile {
     }
 
     public Tile GetNextPath(Tile previous) {
-        var neighbours = GetAdjacentTiles().Where(a => a.IsPath).ToList();
+        var neighbours = GetAdjacentTiles().Where(a => a.Mode == TileMode.path).ToList();
         if (neighbours.Count == 0) { return null; }
         else if (neighbours.Count == 1 && previous == null) { return neighbours[0]; }
         else if (neighbours.Count == 2 && neighbours[0] == previous) { return neighbours[1]; }

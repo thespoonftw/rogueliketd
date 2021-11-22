@@ -11,38 +11,41 @@ public class TileView : MonoBehaviour {
     [SerializeField] GameObject highlight;
     [SerializeField] GameObject path;
     [SerializeField] GameObject regular;
+    [SerializeField] GameObject underground;
 
     public void Init(Tile model, GridView gridView) {
         this.model = model;
         this.gridView = gridView;
-        model.OnPath += ShowPath;
-        model.OnClear += ClearPath;
+        model.OnTileMode += SetMode;
         structurePlacer = StructurePlacementManager.Instance;
         model.OnHighlightColour += SetHighlightColour;
     }
 
     public void SetHighlightColour(Colour color) {
-        highlight.color = color == Colour.red ? new Color(1, 0, 0, 0.5f) : new Color(0, 1, 0, 0.5f);
-        highlight.enabled = color != Colour.clear;
+        highlight.SetActive(color != Colour.clear);
+        var mesh = highlight.GetComponent<MeshRenderer>();
+        switch (color) {
+            case Colour.green: mesh.material = Materials.Instance.greenHighlight; break;
+            case Colour.red: mesh.material = Materials.Instance.redHighlight; break;
+            case Colour.white: mesh.material = Materials.Instance.whiteHighlight; break;
+        }
     }
 
-    private void OnMouseEnter() {
-        structurePlacer.TryHighlightTile(model);
+    public void MouseEnter() {
+        structurePlacer.FocusTile(model);
     }
 
-    private void OnMouseExit() {
-        structurePlacer.RemoveHighlight(model);
+    public void MouseExit() {
+        structurePlacer.FocusTile(null);
     }
 
-    public void ShowPath() {
-        path.enabled = true;
-    }
-
-    public void ClearPath() {
-        path.enabled = false;
+    public void SetMode(TileMode mode) {
+        path.SetActive(mode == TileMode.path);
+        regular.SetActive(mode == TileMode.available);
+        underground.SetActive(mode == TileMode.noBlock);
     }
 
     public void EnableHitbox(bool isActive) {
-        GetComponent<BoxCollider2D>().enabled = isActive;
+        GetComponent<BoxCollider>().enabled = isActive;
     }
 }

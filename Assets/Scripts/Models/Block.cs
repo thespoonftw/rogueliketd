@@ -6,16 +6,14 @@ using UnityEngine;
 
 public class Block {
 
-    public BlockDataEntry data;
+    public BlockData data;
     public readonly int X;
     public readonly int Z;
     private readonly Grid grid;
 
-    public event Action<Colour> OnHighlightColour;
-    public event Action OnIsPlaced;
-    public event Action OnClear;
+    public bool IsPlaced { get; private set; }
 
-    public bool IsPlaced { get; private set; }    
+    public event Action<Colour> OnHighlightColour; 
 
     public Block(int x, int z, Grid grid) {
         this.X = x;
@@ -23,24 +21,31 @@ public class Block {
         this.grid = grid;
     }
 
-    public void LoadData(BlockDataEntry data, int rotationIndex) {
-        for (int x = 0; x < 7; x++) {
-            for (int y = 0; y < 7; y++) {
+    private void SetPathTiles(BlockData data, int rotationIndex) {
+        for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
+            for (int y = 0; y < Constants.BLOCK_SIZE; y++) {
                 if (data.IsPath(x, y, rotationIndex)) {
-                    grid.GetTile(X, Z, x, y).CreatePath();
+                    grid.GetTile(X, Z, x, y).SetMode(TileMode.path);
                 }
             }
         }
     }
 
-    public void FinishPlacingBlock() {
+    public void PlaceTemporaryBlock(BlockData data, int rotationIndex) {
+        IsPlaced = false;
+        GetAllTiles().ForEach(t => t.SetMode(TileMode.available));
+        SetPathTiles(data, rotationIndex);
+    }
+
+    public void PlaceBlock(BlockData data, int rotationIndex) {
         IsPlaced = true;
-        OnIsPlaced?.Invoke();
+        GetAllTiles().ForEach(t => t.SetMode(TileMode.available));
+        SetPathTiles(data, rotationIndex);
     }
 
     public void ClearBlock() {
-        OnClear?.Invoke();
-        GetAllTiles().ForEach(t => t.ClearTile());
+        IsPlaced = false;
+        GetAllTiles().ForEach(t => t.SetMode(TileMode.noBlock));
     }
 
     public Tile GetTileAtEdge(Direction side) {
@@ -76,7 +81,7 @@ public class Block {
             if (adj == null) { return false; }
             var t1 = GetTileAtEdge(dir);
             var t2 = adj.GetTileAtEdge(Tools.GetOppositeSide(dir));
-            if (adj.IsPlaced && GetTileAtEdge(dir).IsPath != adj.GetTileAtEdge(Tools.GetOppositeSide(dir)).IsPath) { return false; }
+            if (adj.IsPlaced && GetTileAtEdge(dir).Mode != adj.GetTileAtEdge(Tools.GetOppositeSide(dir)).Mode) { return false; }
         }
         return true;
     }

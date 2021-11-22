@@ -17,33 +17,33 @@ public class Grid {
         tileArray = new Tile[numberOfTiles, numberOfTiles];
 
         for (int x=0; x<gridSize; x++) {
-            for (int y=0; y<gridSize; y++) {
-                blockArray[x, y] = new Block(x, y, this);
+            for (int z=0; z<gridSize; z++) {
+                blockArray[x, z] = new Block(x, z, this);
             }
         }
 
         for (int x=0; x< numberOfTiles; x++) {
-            for (int y=0; y< numberOfTiles; y++) {
-                tileArray[x, y] = new Tile(x, y, this);
+            for (int z=0; z< numberOfTiles; z++) {
+                tileArray[x, z] = new Tile(x, z, this);
             }
         }
     }
 
-    public Block GetBlock(int x, int y) {
-        if (x < 0 || y < 0 || x >= numberOfBlocks || y >= numberOfBlocks) { return null; }
-        return blockArray[x, y];
+    public Block GetBlock(int x, int z) {
+        if (x < 0 || z < 0 || x >= numberOfBlocks || z >= numberOfBlocks) { return null; }
+        return blockArray[x, z];
     }
 
-    public Tile GetTile(int x, int y) {
-        if (x < 0 || y < 0 || x >= numberOfTiles || y >= numberOfTiles) { return null; }
-        return tileArray[x, y];
+    public Tile GetTile(int x, int z) {
+        if (x < 0 || z < 0 || x >= numberOfTiles || z >= numberOfTiles) { return null; }
+        return tileArray[x, z];
     }
 
-    public Tile GetTile(int blockX, int blockY, int tileX, int tileY) {
-        return tileArray[blockX * Constants.BLOCK_SIZE + tileX, blockY * Constants.BLOCK_SIZE + tileY];
+    public Tile GetTile(int blockX, int blockZ, int tileX, int tileZ) {
+        return tileArray[blockX * Constants.BLOCK_SIZE + tileX, blockZ * Constants.BLOCK_SIZE + tileZ];
     }
 
-    public Tile GetTile(Block block, int x, int y) {
-        return GetTile(block.X, block.Z, x, y);
+    public Tile GetTile(Block block, int x, int z) {
+        return GetTile(block.X, block.Z, x, z);
     }
 }
