@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TravellerView : MonoBehaviour {
 
-    private Traveller model;
+    private Enemy model;
     private float speed = 3;
     private float timeStep;
     private float timeSinceStep;
@@ -15,7 +15,7 @@ public class TravellerView : MonoBehaviour {
         game = GameManager.Instance;
         timeStep = 1 / speed;
         var centre = (Constants.GAME_GRID_SIZE - 1) / 2;
-        model = new Traveller(GameManager.Instance.GameGrid, GameManager.Instance.GameGrid.GetBlock(centre, centre));
+        model = new Enemy(GameManager.Instance.GameGrid, GameManager.Instance.GameGrid.GetBlock(centre, centre));
         UpdatePosition();
     }
 

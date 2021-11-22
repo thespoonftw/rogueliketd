@@ -19,11 +19,19 @@ public class StructureDataSet {
 }
 
 public enum PathingRule {
-    none, // white
-    buildable, // black
-    path, // green
-    buildablePath, // blue
+    none,               // white
+    buildable,          // black
+    path,               // green
+    atleastOnePath,     // red
 }
+
+public enum StructureType {
+    inactive,           // 0
+    towerStandard,      // 1
+    towerMelee,          // 2
+    towerNova,          // 3
+}
+
 
 public class StructureData {
 
@@ -33,11 +41,13 @@ public class StructureData {
     public readonly string name;
     public readonly int cost;
     public readonly int modelIndex;
+    public readonly StructureType type;
 
     public StructureData(List<string> line) {
         name = line[0];
         cost = int.Parse(line[1]);
         modelIndex = int.Parse(line[2]);
+        type = (StructureType)int.Parse(line[3]);
         var placementMap = ImageMaps.GetStructurePlacementMap(modelIndex);
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
             for (int y = 0; y < Constants.BLOCK_SIZE; y++) {
@@ -64,7 +74,7 @@ public class StructureData {
 
     private PathingRule ColorToPathing(Color color) {
         if (color == Color.red) {
-            return PathingRule.buildablePath;
+            return PathingRule.atleastOnePath;
         } else if (color == Color.black) {
             return PathingRule.buildable;
         } else if (color == Color.green) {

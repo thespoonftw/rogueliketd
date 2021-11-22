@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class Structure {
 
-    List<Tile> occupiedTiles = new List<Tile>();
+    public readonly StructureData data;
+
+    private List<Tile> occupiedTiles = new List<Tile>();
+    private List<Tile> areaOfEffect = new List<Tile>();
 
     public Structure(StructureData data, Tile originTile, int rotationIndex) {        
 
@@ -14,14 +17,21 @@ public class Structure {
             for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
                 var coords = Tools.GetCoordsAfterRotationBlock(rotationIndex, x, z);
                 var placementRule = data.GetPathingRule(coords.x, coords.z);
-                if (placementRule == PathingRule.none) { continue; }
+                if (placementRule == PathingRule.none || placementRule == PathingRule.atleastOnePath) { continue; }
                 var tile = GameManager.Instance.GameGrid.GetTile(x + originTile.X - half, z + originTile.Z - half);
                 occupiedTiles.Add(tile);
             }
         }
         occupiedTiles.ForEach(t => t.SetOccupyingStructure(this));
 
-        originTile.SetOccupyingStructure(this);
+        if (data.type != StructureType.inactive)
+        {
+            var tower = new Tower(this);
+        }        
     }
     
+    public List<Tile> GetAreaOfEffect() {
+        return new List<Tile>(areaOfEffect);
+    }
+
 }

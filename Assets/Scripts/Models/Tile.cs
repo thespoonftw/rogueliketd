@@ -21,6 +21,7 @@ public class Tile {
     private readonly Grid grid;
     private Structure occupyingStructure;
     private Block block;
+    private List<Enemy> enemies;
 
     public event Action<TileMode> OnTileMode;
     public event Action<Colour> OnHighlightColour;
@@ -30,6 +31,7 @@ public class Tile {
         Z = y;
         this.grid = grid;
         block = grid.GetBlock(x / Constants.BLOCK_SIZE, y / Constants.BLOCK_SIZE);
+        enemies = new List<Enemy>();
     }
 
     public void SetMode(TileMode mode) {
@@ -68,4 +70,15 @@ public class Tile {
         occupyingStructure = s;
     }
 
+    public void AddEnemy(Enemy e) {
+        enemies.Add(e);
+    }
+
+    public void RemoveEnemy(Enemy e) {
+        enemies.Remove(e);
+    }
+
+    public List<Enemy> GetEnemies() {
+        return new List<Enemy>(enemies);
+    }
 }

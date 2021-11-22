@@ -37,6 +37,7 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
     public bool IsValidPlacement(Tile focusedTile, StructureData data) {
         var grid = GameManager.Instance.GameGrid;
         var half = (Constants.BLOCK_SIZE - 1) / 2;
+        bool? atleastOnePath = null;
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
             for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
                 var coords = Tools.GetCoordsAfterRotationBlock(rotationIndex, x, z);
@@ -47,9 +48,10 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
                 if (tileToCheck.Mode == TileMode.noBlock) { return false; }
                 if (placementRule == PathingRule.path && tileToCheck.Mode != TileMode.path) { return false; }
                 if (placementRule == PathingRule.buildable && tileToCheck.Mode != TileMode.available) { return false; }
-
+                if (placementRule == PathingRule.atleastOnePath && atleastOnePath != true) { atleastOnePath = tileToCheck.Mode == TileMode.path; }
             }
         }
+        if (atleastOnePath == false) { return false; }
         return true;
     }
 

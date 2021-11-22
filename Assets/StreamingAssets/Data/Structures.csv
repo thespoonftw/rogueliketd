@@ -1,3 +1,24 @@
-name,cost,model index
-spike trap,50,1
-spinning blade,40,2
+name,cost,model index,pathing index,type,damage,requires
+spike trap,50,1,1,wave,pierce,
+spinning blade,40,2,2,nova,pierce,
+boulder trap,50,3,3,wave,impact,
+spikeball trap,,,,,,obsidian
+arrow tower,40,4,0,ranged,pierce,
+flame arrow tower,50,4,0,ranged,energy,gas
+swinging blade,70,5,5,melee,pierce,
+crush trap,50,6,6,melee,impact,
+dart tower,,,,tower,pierce,
+poison dart tower,,,,tower,atrophic,gas
+surf trap,,,,wave,impact,water
+blast trap,,,,nova,impact,gas
+flame jet trap,,,,cone,energy,gas
+gas vent,,,,nova,atrophic,gas
+jolt trap,,,,nova,energy,magnetite
+solar tower,,,,ranged,energy,sunlight
+scald trap,,,,cone,energy,water
+ballista tower,,,,ranged,pierce,
+sonic trap,,,,nova,energy,magnetite
+acid tower,,,,cone,atrophic,gas
+poison pit,,,,melee,atrophic,gas
+icicle tower,,,,ranged,pierce,water
+bomb tower,,,,ranged,,gas
