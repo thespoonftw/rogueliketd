@@ -13,6 +13,8 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
     private StructureData structureData;
     private int rotationIndex;
 
+    [SerializeField] GameObject rotateText;
+
     public event Action<Tile, bool, StructureData, int> OnFocusTile;
 
     public void Init() {
@@ -25,6 +27,7 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
         this.structureData = placingStructure;
         isPlacingStructureEnabled = true;
         rotationIndex = 0;
+        rotateText.SetActive(placingStructure.isRotatable);
         Raycaster.SetMode(RaycastMode.tiles);
     }
 
@@ -58,11 +61,13 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
     public void FocusTile(Tile tile) {
         if (!isPlacingStructureEnabled && tile != null) { return; }
         focusedTile = tile;
-        if (tile != null) { isValid = IsValidPlacement(tile, structureData); }        
+        if (tile != null) { isValid = IsValidPlacement(tile, structureData); }
         OnFocusTile?.Invoke(tile, isValid, structureData, rotationIndex);        
     }
 
     private void RotateStructure() {
+        if (!isPlacingStructureEnabled) { return; }
+        if (!structureData.isRotatable) { return; }
         rotationIndex = (rotationIndex + 1) % 4;
         FocusTile(focusedTile);
     }

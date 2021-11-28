@@ -1,24 +1,45 @@
-name,cost,model index,pathing index,type,damage,requires
-spike trap,50,1,1,wave,pierce,
-spinning blade,40,2,2,nova,pierce,
-boulder trap,50,3,3,wave,impact,
-spikeball trap,,,,,,obsidian
-arrow tower,40,4,0,ranged,pierce,
-flame arrow tower,50,4,0,ranged,energy,gas
-swinging blade,70,5,5,melee,pierce,
-crush trap,50,6,6,melee,impact,
-dart tower,,,,tower,pierce,
-poison dart tower,,,,tower,atrophic,gas
-surf trap,,,,wave,impact,water
-blast trap,,,,nova,impact,gas
-flame jet trap,,,,cone,energy,gas
-gas vent,,,,nova,atrophic,gas
-jolt trap,,,,nova,energy,magnetite
-solar tower,,,,ranged,energy,sunlight
-scald trap,,,,cone,energy,water
-ballista tower,,,,ranged,pierce,
-sonic trap,,,,nova,energy,magnetite
-acid tower,,,,cone,atrophic,gas
-poison pit,,,,melee,atrophic,gas
-icicle tower,,,,ranged,pierce,water
-bomb tower,,,,ranged,,gas
+name,type,cost,model index,pathing index,action,damage,requires,requires2,rotatable,range
+beacon,starting,50,0,0,beacon,none,,,,10
+shrine,starting,50,0,0,shrine,none,,,,6
+solar collector,energy,50,0,0,shrine,none,sunlight,,,6
+flame pit,energy,50,0,0,shrine,none,tar,,,6
+crystal resonator,energy,50,0,0,shrine,none,crystal,,,6
+soul collector,energy,50,0,0,shrine,none,,,,6
+great shrine,energy,50,0,0,shrine,none,,,,6
+arrow tower,starting,50,0,0,ranged,normal,,,,6
+flame arrow tower,upgrade,50,0,0,ranged,heat,tar,,,6
+poison arrow tower,upgrade,50,0,0,ranged,atrophy,shroom,,,6
+wall spike trap,simple,50,1,1,wall,normal,,,TRUE,1
+black spike trap,upgrade,50,1,1,wall,normal,obsidian,,TRUE,1
+flame jet trap,upgrade,50,1,1,wall,heat,tar,,TRUE,1
+floor spike trap,simple,50,4,3,floor,normal,,,,1
+jolt trap,upgrade,50,4,3,floor,heat,crystal,,,1
+poison pit trap,upgrade,50,4,3,floor,atrophy,shroom,,,1
+boulder trap,simple,50,3,2,boulder,normal,,,TRUE,3
+spikeball trap,upgrade,50,3,2,boulder,normal,obsidian,,TRUE,3
+surf trap,upgrade,50,3,2,boulder,normal,water,,TRUE,3
+ballista tower,simple,50,6,5,ranged,normal,,,,12
+crystal bolt tower,upgrade,50,6,5,ranged,normal,crystal,,,12
+icicle tower,upgrade,50,6,5,ranged,normal,water,,,12
+dart tower,simple,50,0,0,spread,normal,,,,3
+sleep dart tower,upgrade,50,0,0,spread,atrophy,shroom,,,3
+shock dart tower,upgrade,50,0,0,spread,heat,crystal,,,3
+bomb tower,simple,50,6,5,bomb,normal,,,,7
+incendiary tower,upgrade,50,6,5,bomb,heat,tar,,,7
+fragmentation tower,upgrade,50,6,5,bomb,normal,obsidian,,,7
+solar tower,single,50,0,0,ranged,heat,sunlight,,,5
+tar sprayer,single,50,0,0,ranged,heat,tar,,,5
+swinging blade,single,50,5,4,wall,normal,obsidian,,TRUE,5
+spinning blade,single,50,2,0,nova,normal,obsidian,,,5
+dousing tower,single,50,0,0,ranged,normal,water,,,5
+telekenetic tower,single,50,0,0,ranged,normal,crystal,,,5
+scald trap,duo,100,0,0,cone,heat,water,tar,,5
+acid sprayer,duo,100,0,0,cone,atrophy,water,shroom,,5
+storm tower,duo,100,0,0,ranged,heat,water,crystal,,5
+plasma tower,duo,100,0,0,bomb,heat,tar,crystal,,5
+magma tower,duo,100,0,0,bomb,heat,tar,obsidian,,5
+toxic gas trap,duo,100,0,0,nova,atrophy,tar,shroom,,5
+decay tower,duo,100,0,0,ranged,atrophy,shroom,crystal,,5
+virus tower,duo,100,0,0,ranged,atrophy,shroom,obsidian,,5
+sonic tower,duo,100,0,0,nova,normal,obsidian,crystal,,5
+laser tower,duo,100,0,0,ranged,heat,sunlight,crystal,,5

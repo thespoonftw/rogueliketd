@@ -35,10 +35,6 @@ public class TileView : MonoBehaviour {
         structurePlacer.FocusTile(model);
     }
 
-    public void MouseExit() {
-        structurePlacer.FocusTile(null);
-    }
-
     public void SetMode(TileMode mode) {
         path.SetActive(mode == TileMode.path);
         regular.SetActive(mode == TileMode.available);

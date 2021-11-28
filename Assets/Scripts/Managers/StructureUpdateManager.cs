@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StructureUpdateManager : Singleton<StructureUpdateManager>
 {
-    private List<Tower> towers;
+    private List<Tower> towers = new List<Tower>();
 
     public void AddTower(Tower tower)
     {

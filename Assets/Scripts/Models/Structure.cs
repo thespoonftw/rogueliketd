@@ -24,7 +24,7 @@ public class Structure {
         }
         occupiedTiles.ForEach(t => t.SetOccupyingStructure(this));
 
-        if (data.type != StructureType.inactive)
+        if (data.action != StructureAction.beacon && data.action != StructureAction.shrine)
         {
             var tower = new Tower(this);
         }        

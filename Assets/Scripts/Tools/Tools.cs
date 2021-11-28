@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,5 +47,14 @@ public class Tools : MonoBehaviour
     public static Coords GetCoordsAfterRotationBlock(int rotationIndex, int x, int z) {
         var mid = (Constants.BLOCK_SIZE - 1) / 2;
         return GetCoordsAfterRotation(rotationIndex, x, z, mid, mid);
+    }
+
+    public static T GetEnum<T>(string s) where T : struct {
+        Enum.TryParse(s, out T returner);
+        return returner;
+    }
+
+    public static bool ParseBool(string s) {
+        return s == "TRUE";
     }
 }

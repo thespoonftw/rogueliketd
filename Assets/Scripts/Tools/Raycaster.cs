@@ -38,7 +38,6 @@ public class Raycaster : MonoBehaviour {
 
         switch (mode) {
             case RaycastMode.tiles:
-                if (oldTarget != null) { oldTarget.GetComponent<TileView>().MouseExit(); }
                 if (currentTarget != null) { currentTarget?.GetComponent<TileView>().MouseEnter(); }
                 break;
             case RaycastMode.blocks:

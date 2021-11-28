@@ -19,13 +19,13 @@ public class ResourcerEditor : Editor {
 
 }
 
-public class Resourcer : MonoBehaviour
-{
+public class Resourcer : MonoBehaviour {
     public void UpdateAssets() {
+        var prefabs = GetComponent<Prefabs>();
+        prefabs.structureModels = LoadPrefabs("StructureModels");
         var imageMaps = GetComponent<ImageMaps>();
-        imageMaps.blockImageMaps = LoadImageMaps("BlockImageMaps");
-        imageMaps.structurePlacementMaps = LoadImageMaps("StructurePlacementMaps");
-        imageMaps.structureAreaMaps = LoadImageMaps("StructureAreaMaps");
+        imageMaps.blockImageMaps = LoadImageMaps("BlockMaps");
+        imageMaps.structureMaps = LoadImageMaps("StructureMaps");
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
     }
@@ -48,6 +48,24 @@ public class Resourcer : MonoBehaviour
             importer.npotScale = TextureImporterNPOTScale.None;
             importer.SaveAndReimport();
             returner[i] = texture;
+        }
+        return returner;
+    }
+
+    public List<GameObject> LoadPrefabs(string folderName) {
+        var folder = Application.dataPath + "/Resources/" + folderName + "/";
+        var files = Directory.GetFiles(folder);
+        var maxInt = 0;
+        foreach (var f in files) {
+            maxInt = Mathf.Max(GetIntFromFilepath(f), maxInt);
+        }
+        var returner = new List<GameObject>(new GameObject[maxInt + 1]);
+        foreach (var f in files) {
+            if (f.Substring(f.Length - 4) == "meta") { continue; }
+            var i = GetIntFromFilepath(f);
+            var filename = f.Split('/').ToList().Last();
+            var prefab = Resources.Load<GameObject>(folderName + "/" + filename.Split('.')[0]);
+            returner[i] = prefab;
         }
         return returner;
     }

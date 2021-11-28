@@ -14,7 +14,7 @@ public class Tower {
 
     public Tower(Structure structure) {
         this.structure = structure;
-        isRangedAttacker = (structure.data.type == StructureType.towerMelee);
+        //isRangedAttacker = (structure.data.type == StructureType.towerMelee);
         StructureUpdateManager.Instance.AddTower(this);
     }
 

@@ -26,40 +26,63 @@ public enum PathingRule {
 }
 
 public enum StructureType {
-    inactive,           // 0
-    towerStandard,      // 1
-    towerMelee,          // 2
-    towerNova,          // 3
+    starting,
+    energy,
+    simple,
+    upgrade,
+    single,
+    duo
+}
+
+public enum StructureAction {
+    beacon,
+    shrine,
+    wall,
+    floor,
+    boulder,
+    ranged,
+    spread,
+    bomb,
+    laser,
+    nova,
+    cone,
 }
 
 
 public class StructureData {
 
     private PathingRule[,] placementArray = new PathingRule[Constants.BLOCK_SIZE, Constants.BLOCK_SIZE];
-    private bool[,] areaArray = new bool[Constants.MAX_STRUCTURE_AREA, Constants.MAX_STRUCTURE_AREA];
 
     public readonly string name;
+    public readonly StructureType type;
     public readonly int cost;
     public readonly int modelIndex;
-    public readonly StructureType type;
+    public readonly int pathIndex;
+    public readonly StructureAction action;
+    public readonly DamageType damageType;
+    public readonly ResourceType requiredResource;
+    public readonly ResourceType requiredResourceTwo;
+    public readonly bool isRotatable;
+    public readonly float range;
 
     public StructureData(List<string> line) {
         name = line[0];
-        cost = int.Parse(line[1]);
-        modelIndex = int.Parse(line[2]);
-        type = (StructureType)int.Parse(line[3]);
-        var placementMap = ImageMaps.GetStructurePlacementMap(modelIndex);
+        type = Tools.GetEnum<StructureType>(line[1]);
+        cost = int.Parse(line[2]);
+        modelIndex = int.Parse(line[3]);
+        pathIndex = int.Parse(line[4]);
+        action = Tools.GetEnum<StructureAction>(line[5]);
+        damageType = Tools.GetEnum<DamageType>(line[6]);
+        requiredResource = Tools.GetEnum<ResourceType>(line[7]);
+        requiredResourceTwo = Tools.GetEnum<ResourceType>(line[8]);
+        isRotatable = Tools.ParseBool(line[9]);
+        range = float.Parse(line[10]);
+
+        var placementMap = ImageMaps.GetStructureMap(pathIndex);
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
             for (int y = 0; y < Constants.BLOCK_SIZE; y++) {
                 var pixel = placementMap.GetPixel(x, y);
                 placementArray[x, y] = ColorToPathing(pixel);
-            }
-        }
-        var areaMap = ImageMaps.GetStructureAreaMap(modelIndex);
-        for (int x = 0; x < Constants.MAX_STRUCTURE_AREA; x++) {
-            for (int y = 0; y < Constants.MAX_STRUCTURE_AREA; y++) {
-                var pixel = areaMap.GetPixel(x, y);
-                areaArray[x, y] = pixel == Color.black;
             }
         }
     }
@@ -69,7 +92,7 @@ public class StructureData {
     }
 
     public bool GetIsArea(int x, int z) {
-        return areaArray[x, z];
+        return placementArray[x, z] == PathingRule.buildable || placementArray[x, z] == PathingRule.path;
     }
 
     private PathingRule ColorToPathing(Color color) {

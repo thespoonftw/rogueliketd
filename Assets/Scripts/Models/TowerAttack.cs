@@ -5,6 +5,6 @@ using UnityEngine;
 
 public abstract class TowerAttack {
 
-    public 
+    //public 
     
 }

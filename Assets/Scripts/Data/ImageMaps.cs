@@ -5,8 +5,7 @@ using UnityEngine;
 public class ImageMaps : MonoBehaviour
 {
     public List<Texture2D> blockImageMaps;
-    public List<Texture2D> structurePlacementMaps;
-    public List<Texture2D> structureAreaMaps;
+    public List<Texture2D> structureMaps;
    
     private static ImageMaps instance;
 
@@ -18,11 +17,7 @@ public class ImageMaps : MonoBehaviour
         return instance.blockImageMaps[index];
     }
 
-    public static Texture2D GetStructurePlacementMap(int index) {
-        return instance.structurePlacementMaps[index];
-    }
-
-    public static Texture2D GetStructureAreaMap(int index) {
-        return instance.structureAreaMaps[index];
+    public static Texture2D GetStructureMap(int index) {
+        return instance.structureMaps[index];
     }
 }
