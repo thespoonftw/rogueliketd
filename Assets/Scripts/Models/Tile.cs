@@ -40,15 +40,15 @@ public class Tile {
     }
 
     public List<Tile> GetAdjacentTiles() {
-        return Constants.ALL_DIRECTIONS.Select(dir => GetAdjacentTile(dir)).ToList();
+        return Direction.GetAll().Select(dir => GetAdjacentTile(dir)).ToList();
     }
 
-    public Tile GetAdjacentTile(Direction side) {
-        switch (side) {
-            case Direction.south: return grid.GetTile(X, Z - 1);
-            case Direction.north: return grid.GetTile(X, Z + 1);
-            case Direction.east: return grid.GetTile(X + 1, Z);
-            case Direction.west: return grid.GetTile(X - 1, Z);
+    public Tile GetAdjacentTile(Direction direction) {
+        switch (direction.Value) {
+            case DirectionValue.south: return grid.GetTile(X, Z - 1);
+            case DirectionValue.north: return grid.GetTile(X, Z + 1);
+            case DirectionValue.east: return grid.GetTile(X + 1, Z);
+            case DirectionValue.west: return grid.GetTile(X - 1, Z);
         }
         return null;
     }

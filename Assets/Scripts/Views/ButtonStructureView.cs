@@ -9,9 +9,9 @@ public class ButtonStructureView : MonoBehaviour {
     [SerializeField] Text text;
     [SerializeField] GameObject toggle;
 
-    private StructureData structure;
+    private DataStructure structure;
 
-    public void Init(StructureData structure) {
+    public void Init(DataStructure structure) {
         toggle.SetActive(structure != null);
         this.structure = structure;
         if (structure != null) {

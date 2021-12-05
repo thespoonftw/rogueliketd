@@ -8,12 +8,17 @@ public class TowerRangeView : MonoBehaviour {
 
     [SerializeField] LineRenderer lineRender;
 
-    public void ShowRange(StructureData data, Tile tile, int rotationIndex) {
+    public void ShowRange(DataStructure data, Tile tile, Direction direction) {
         
         switch (data.action) {
+            case StructureAction.swing:
+                ShowSquareRange(data, tile, direction, 1, 1, 0); break;
             case StructureAction.wall:
+                ShowSquareRange(data, tile, direction, 2, 1, 1); break;
             case StructureAction.boulder: 
-                ShowSquareRange(data, tile, rotationIndex); break;
+                ShowSquareRange(data, tile, direction, 1, 3, 1); break;
+            case StructureAction.bomb:
+                ShowArcRange(data, tile, direction, 90); break;
             case StructureAction.floor: return;
             default: ShowCircularRange(data, tile); break;
         }
@@ -21,25 +26,57 @@ public class TowerRangeView : MonoBehaviour {
     }
 
     public void Hide() {
-        lineRender.enabled = false;
+        lineRender.enabled = false; 
     }
 
-    public void ShowSquareRange(StructureData data, Tile tile, int rotationIndex) {
+    public void ShowSquareRange(DataStructure data, Tile tile, Direction direction, int width, int length, int offset) {
         lineRender.enabled = true;
-
-    }
-
-    public void ShowCircularRange(StructureData data, Tile tile) {
-        lineRender.enabled = true;
+        lineRender.positionCount = 5;
         var centre = GameManager.Instance.GameGridView.GetTilePosition(tile) + new Vector3(0, 0.1f, 0);
-        var range = data.range;
-        var numberOfPoints = (Mathf.RoundToInt(range) * 4) + 10;
-        var angle = 360f / numberOfPoints;
+        var v1 = direction.GetVectorAfterRotation(new Vector3(0.5f - offset,          0, -0.5f + width));
+        var v2 = direction.GetVectorAfterRotation(new Vector3(0.5f - offset - length, 0, -0.5f + width));
+        var v3 = direction.GetVectorAfterRotation(new Vector3(0.5f - offset - length, 0, -0.5f));
+        var v4 = direction.GetVectorAfterRotation(new Vector3(0.5f - offset,          0, -0.5f));
+        lineRender.SetPosition(0, centre + v1);
+        lineRender.SetPosition(1, centre + v2);
+        lineRender.SetPosition(2, centre + v3);
+        lineRender.SetPosition(3, centre + v4);
+        lineRender.SetPosition(4, centre + v1);
+
+    }
+
+    public void ShowCircularRange(DataStructure data, Tile tile) {
+        lineRender.enabled = true;
+        var offset = data.isEvenWidth ? new Vector3(0.5f, 0.1f, 0.5f) : new Vector3(0, 0.1f, 0);
+        var centre = GameManager.Instance.GameGridView.GetTilePosition(tile) + offset;
+        var numberOfPoints = GetNumberOfPointsForRange(data.range);
+        var angleBetweenPoints = 360f / numberOfPoints;
         lineRender.positionCount = numberOfPoints + 1;
         for (int i=0; i<=numberOfPoints; i++) {
-            var pos = centre + Quaternion.Euler(0, angle * i, 0) * (range * Vector3.forward);
+            var pos = centre + Quaternion.Euler(0, angleBetweenPoints * i, 0) * (data.range * Vector3.forward);
             lineRender.SetPosition(i, pos);
         }
+    }
 
+    public void ShowArcRange(DataStructure data, Tile tile, Direction direction, float angle) {
+        lineRender.enabled = true;
+        var offset = data.isEvenWidth ? direction.GetVectorAfterRotation(new Vector3(0.5f, 0.1f, 0.5f)) : new Vector3(0, 0.1f, 0);
+        var centre = GameManager.Instance.GameGridView.GetTilePosition(tile) + offset;
+        var range = data.range;
+        var numberOfPoints = Mathf.RoundToInt(GetNumberOfPointsForRange(range) * (angle / 360));
+        var angleBetweenPoints = angle / numberOfPoints;
+        lineRender.positionCount = numberOfPoints + 2;
+        lineRender.SetPosition(0, centre);
+        for (int i = 0; i < numberOfPoints; i++) {
+            var half = numberOfPoints / 2f;
+            var yAngle = (angleBetweenPoints * (i - half)) + direction.YAngle - 90;            
+            var pos = centre + Quaternion.Euler(0, yAngle, 0) * (data.range * Vector3.forward);
+            lineRender.SetPosition(i + 1, pos);
+        }
+        lineRender.SetPosition(numberOfPoints + 1, centre);
+    }
+
+    private int GetNumberOfPointsForRange(float range) {
+        return (Mathf.RoundToInt(range) * 4) + 10;
     }
 }

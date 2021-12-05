@@ -5,17 +5,17 @@ using UnityEngine;
 
 public class Structure {
 
-    public readonly StructureData data;
+    public readonly DataStructure data;
 
     private List<Tile> occupiedTiles = new List<Tile>();
     private List<Tile> areaOfEffect = new List<Tile>();
 
-    public Structure(StructureData data, Tile originTile, int rotationIndex) {        
+    public Structure(DataStructure data, Tile originTile, Direction direction) {
 
         var half = (Constants.BLOCK_SIZE - 1) / 2;
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
             for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
-                var coords = Tools.GetCoordsAfterRotationBlock(rotationIndex, x, z);
+                var coords = direction.GetCoordsAfterRotationBlock(x, z);
                 var placementRule = data.GetPathingRule(coords.x, coords.z);
                 if (placementRule == PathingRule.none || placementRule == PathingRule.atleastOnePath) { continue; }
                 var tile = GameManager.Instance.GameGrid.GetTile(x + originTile.X - half, z + originTile.Z - half);

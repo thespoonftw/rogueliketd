@@ -8,21 +8,21 @@ public class StructureSelectionManager : Singleton<StructureSelectionManager>
     [SerializeField] GameObject downArrow;
     [SerializeField] GameObject upArrow;
 
-    private List<StructureData> availableStructures = new List<StructureData>();
+    private List<DataStructure> availableStructures = new List<DataStructure>();
     private int currentPage = 0;
 
     public void Init() {
-        availableStructures.Add(StructureDataSet.GetEntry(0)); // beacon
-        availableStructures.Add(StructureDataSet.GetEntry(1)); // shrine
-        availableStructures.Add(StructureDataSet.GetEntry(7)); // arrow tower
-        availableStructures.Add(StructureDataSet.GetEntry(10)); // spike wall
-        availableStructures.Add(StructureDataSet.GetEntry(13)); // floor spike
-        availableStructures.Add(StructureDataSet.GetEntry(16)); // boulder
-        availableStructures.Add(StructureDataSet.GetEntry(19)); // ballista
-        availableStructures.Add(StructureDataSet.GetEntry(22)); // dart
-        availableStructures.Add(StructureDataSet.GetEntry(25)); // bomb
-        availableStructures.Add(StructureDataSet.GetEntry(30)); // swinging blade
-        availableStructures.Add(StructureDataSet.GetEntry(31)); // spinning blade
+        availableStructures.Add(Data.Structures.GetEntry(0)); // beacon
+        availableStructures.Add(Data.Structures.GetEntry(1)); // shrine
+        availableStructures.Add(Data.Structures.GetEntry(7)); // arrow tower
+        availableStructures.Add(Data.Structures.GetEntry(10)); // spike wall
+        availableStructures.Add(Data.Structures.GetEntry(13)); // floor spike
+        availableStructures.Add(Data.Structures.GetEntry(16)); // boulder
+        availableStructures.Add(Data.Structures.GetEntry(19)); // ballista
+        availableStructures.Add(Data.Structures.GetEntry(22)); // dart
+        availableStructures.Add(Data.Structures.GetEntry(25)); // bomb
+        availableStructures.Add(Data.Structures.GetEntry(30)); // swinging blade
+        availableStructures.Add(Data.Structures.GetEntry(31)); // spinning blade
 
     }
 

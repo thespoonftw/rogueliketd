@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StructureView : MonoBehaviour {
 
-    public void Init(StructureData data, int rotationIndex) {
-        var model = Instantiate(Prefabs.Instance.structureModels[data.modelIndex], transform.position, Tools.GetRotation(rotationIndex), transform);
+    public void Init(DataStructure data, Direction direction) {
+        var model = Instantiate(Prefabs.Instance.structureModels[data.modelIndex], transform.position, direction.Quaternion, transform);
     }
 }

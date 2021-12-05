@@ -4,25 +4,11 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class BlockDataSet {
-
-    private static List<BlockData> list = new List<BlockData>();
-
-    public static void Load() {
-        var data = CsvLoader.LoadFile("Blocks");
-        data.ForEach(d => list.Add(new BlockData(d)));
-    }
-
-    public static BlockData GetEntry(int index) {
-        return list[index];
-    }
-}
-
-public class BlockData {
+public class DataBlock : CsvDataEntry {
 
     private bool[,] array = new bool[Constants.BLOCK_SIZE, Constants.BLOCK_SIZE];
 
-    public BlockData(List<string> line) {
+    public DataBlock(List<string> line) {
 
         var imageMap = ImageMaps.GetBlockMap(int.Parse(line[0]));
 
@@ -34,8 +20,8 @@ public class BlockData {
         }
     }
 
-    public bool IsPath(int x, int z, int rotationIndex = 0) {
-        var coords = Tools.GetCoordsAfterRotationBlock(rotationIndex, x, z);
+    public bool IsPath(int x, int z, Direction direction) {
+        var coords = direction.GetCoordsAfterRotationBlock(x, z);
         return array[coords.x, coords.z];
     }
 }

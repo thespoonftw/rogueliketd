@@ -1,0 +1,6 @@
+name,points,speed,health
+tiny,1,16,10
+small,3,8,40
+medium,9,4,160
+large,27,2,640
+huge,81,1,2560

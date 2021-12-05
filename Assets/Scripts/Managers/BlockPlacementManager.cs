@@ -10,8 +10,8 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
 
     private Grid GameGrid => GameManager.Instance.GameGrid;
      
-    private BlockData blockData;
-    private int rotationIndex = 0;
+    private DataBlock blockData;
+    private Direction currentDirection;
     private bool isPlacingBlockEnabled = false;
     private Block highlightedBlock;
 
@@ -26,7 +26,7 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
     public void TryHighlightBlock(Block block) {
         if (!isPlacingBlockEnabled) { return; }
         if (!block.IsPlaced) {
-            block.PlaceTemporaryBlock(blockData, rotationIndex);
+            block.PlaceTemporaryBlock(blockData, currentDirection);
         }
         var isValid = block.IsValidBlockPlacement();
         block.SetHighlight(isValid ? Colour.green : Colour.red);
@@ -42,16 +42,16 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
     }
 
     public void StartPlacingBlock(int blockIndex) {
-        blockData = BlockDataSet.GetEntry(blockIndex);
+        blockData = Data.Blocks.GetEntry(blockIndex);
         isPlacingBlockEnabled = true;
-        rotationIndex = 0;
+        currentDirection = new Direction();
         highlightedBlock = null;
         Raycaster.SetMode(RaycastMode.blocks);
     }
 
     public void RotateBlock() {
         if (highlightedBlock == null || !isPlacingBlockEnabled) { return; }
-        rotationIndex = (rotationIndex + 1) % 4;
+        currentDirection.RotateClockwise();
         if (!highlightedBlock.IsPlaced) { highlightedBlock.ClearBlock(); }
         TryHighlightBlock(highlightedBlock);
     }
@@ -61,14 +61,14 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         if (!isPlacingBlockEnabled) { return; }
         if (!highlightedBlock.IsValidBlockPlacement()) { return; }
         StopBlockPlacement();
-        highlightedBlock.PlaceBlock(blockData, rotationIndex);
+        highlightedBlock.PlaceBlock(blockData, currentDirection);
         CanvasManager.Instance.FinishPlacingBlock();
     }
 
-    public void PlaceBlockWithCode(int x, int y, int blockIndex, int rotation = 0) {
-        var blockData = BlockDataSet.GetEntry(blockIndex);
+    public void PlaceBlockWithCode(int x, int y, int blockIndex, Direction direction) {
+        var blockData = Data.Blocks.GetEntry(blockIndex);
         var block = GameGrid.GetBlock(x, y);
-        block.PlaceBlock(blockData, rotation);
+        block.PlaceBlock(blockData, direction);
     }
 
     public void CreatePreviewBlock(int dataIndex, Transform previewTransform) {
@@ -79,7 +79,7 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         var gridView = gridgo.AddComponent<GridView>();
         gridView.Init(grid);
         var block = grid.GetBlock(0, 0);
-        block.PlaceBlock(BlockDataSet.GetEntry(dataIndex), 0);
+        block.PlaceBlock(Data.Blocks.GetEntry(dataIndex), new Direction());
     }
 
     public void StopBlockPlacement() {

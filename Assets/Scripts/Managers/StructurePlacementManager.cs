@@ -10,12 +10,12 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
     private bool isPlacingStructureEnabled;
     private Tile focusedTile;
     private bool isValid;
-    private StructureData structureData;
-    private int rotationIndex;
+    private DataStructure structureData;
+    private Direction currentDirection;
 
     [SerializeField] GameObject rotateText;
 
-    public event Action<Tile, bool, StructureData, int> OnFocusTile;
+    public event Action<Tile, bool, DataStructure, Direction> OnFocusTile;
 
     public void Init() {
         game = GameManager.Instance;
@@ -23,10 +23,10 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
         Inputs.OnRightMouseQuickRelease += RotateStructure;
     }
 
-    public void StartPlacingStructure(StructureData placingStructure) {
+    public void StartPlacingStructure(DataStructure placingStructure) {
         this.structureData = placingStructure;
         isPlacingStructureEnabled = true;
-        rotationIndex = 0;
+        currentDirection = new Direction();
         rotateText.SetActive(placingStructure.isRotatable);
         Raycaster.SetMode(RaycastMode.tiles);
     }
@@ -37,13 +37,13 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
         Raycaster.SetMode(RaycastMode.standard);
     }
 
-    public bool IsValidPlacement(Tile focusedTile, StructureData data) {
+    public bool IsValidPlacement(Tile focusedTile, DataStructure data) {
         var grid = GameManager.Instance.GameGrid;
         var half = (Constants.BLOCK_SIZE - 1) / 2;
         bool? atleastOnePath = null;
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
             for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
-                var coords = Tools.GetCoordsAfterRotationBlock(rotationIndex, x, z);
+                var coords = currentDirection.GetCoordsAfterRotationBlock(x, z);
                 var placementRule = data.GetPathingRule(coords.x, coords.z);
                 if (placementRule == PathingRule.none) { continue; }
                 var tileToCheck = grid.GetTile(focusedTile.X - half + x, focusedTile.Z - half + z);
@@ -62,13 +62,13 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
         if (!isPlacingStructureEnabled && tile != null) { return; }
         focusedTile = tile;
         if (tile != null) { isValid = IsValidPlacement(tile, structureData); }
-        OnFocusTile?.Invoke(tile, isValid, structureData, rotationIndex);        
+        OnFocusTile?.Invoke(tile, isValid, structureData, currentDirection);        
     }
 
     private void RotateStructure() {
         if (!isPlacingStructureEnabled) { return; }
         if (!structureData.isRotatable) { return; }
-        rotationIndex = (rotationIndex + 1) % 4;
+        currentDirection.RotateClockwise();
         FocusTile(focusedTile);
     }
 
@@ -80,8 +80,8 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
         var pos = game.GameGridView.GetTilePosition(focusedTile.X, focusedTile.Z);
         var go = Instantiate(Prefabs.Instance.structurePrefab, pos, Quaternion.identity, transform);
         var view = go.GetComponent<StructureView>();
-        view.Init(structureData, rotationIndex);
-        var structure = new Structure(structureData, focusedTile, rotationIndex);
+        view.Init(structureData, currentDirection);
+        var structure = new Structure(structureData, focusedTile, currentDirection);
         game.ModifyGold(-structureData.cost);
         FocusTile(focusedTile);
     }

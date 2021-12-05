@@ -3,21 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StructureDataSet {
-
-    private static List<StructureData> list = new List<StructureData>();
-
-    public static void Load() {
-        var data = CsvLoader.LoadFile("Structures");
-        data.ForEach(d => list.Add(new StructureData(d)));
-
-    }
-
-    public static StructureData GetEntry(int index) {
-        return list[index];
-    }
-}
-
 public enum PathingRule {
     none,               // white
     buildable,          // black
@@ -40,6 +25,7 @@ public enum StructureAction {
     wall,
     floor,
     boulder,
+    swing,
     ranged,
     spread,
     bomb,
@@ -48,8 +34,7 @@ public enum StructureAction {
     cone,
 }
 
-
-public class StructureData {
+public class DataStructure : CsvDataEntry {
 
     private PathingRule[,] placementArray = new PathingRule[Constants.BLOCK_SIZE, Constants.BLOCK_SIZE];
 
@@ -64,8 +49,9 @@ public class StructureData {
     public readonly ResourceType requiredResourceTwo;
     public readonly bool isRotatable;
     public readonly float range;
+    public readonly bool isEvenWidth;
 
-    public StructureData(List<string> line) {
+    public DataStructure(List<string> line) {
         name = line[0];
         type = Tools.GetEnum<StructureType>(line[1]);
         cost = int.Parse(line[2]);
@@ -77,6 +63,7 @@ public class StructureData {
         requiredResourceTwo = Tools.GetEnum<ResourceType>(line[8]);
         isRotatable = Tools.ParseBool(line[9]);
         range = float.Parse(line[10]);
+        isEvenWidth = Tools.ParseBool(line[11]);
 
         var placementMap = ImageMaps.GetStructureMap(pathIndex);
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {

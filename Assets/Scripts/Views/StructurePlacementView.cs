@@ -17,7 +17,7 @@ public class StructurePlacementView : MonoBehaviour {
         StructurePlacementManager.Instance.OnFocusTile += FocusTile;
     }
 
-    private void FocusTile(Tile tile, bool isValid, StructureData data, int rotationIndex) {
+    private void FocusTile(Tile tile, bool isValid, DataStructure data, Direction direction) {
         if (tile == null) {
             Destroy(ghostStructure);
             towerRangeView.Hide();
@@ -30,15 +30,15 @@ public class StructurePlacementView : MonoBehaviour {
         if (tile != null) {
             var pos = game.GameGridView.GetTilePosition(tile);
             if (ghostStructure == null) {
-                ghostStructure = Instantiate(Prefabs.Instance.structureModels[data.modelIndex], pos, Tools.GetRotation(rotationIndex), transform);
+                ghostStructure = Instantiate(Prefabs.Instance.structureModels[data.modelIndex], pos, direction.Quaternion, transform);
             } else {
                 ghostStructure.transform.position = pos;
-                ghostStructure.transform.rotation = Tools.GetRotation(rotationIndex);
+                ghostStructure.transform.rotation = direction.Quaternion;
             }
             var meshes = ghostStructure.GetComponentsInChildren<MeshRenderer>().ToList();
             meshes.ForEach(m => m.material = isValid ? Materials.Instance.greenHighlight : Materials.Instance.redHighlight);
             highlightedTiles = new List<Tile>();
-            towerRangeView.ShowRange(data, tile, rotationIndex);
+            towerRangeView.ShowRange(data, tile, direction);
 
             /* this is causing lag :( but its not needed
             var half = (Constants.BLOCK_SIZE - 1) / 2;

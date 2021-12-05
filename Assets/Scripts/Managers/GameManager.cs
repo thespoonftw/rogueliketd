@@ -15,15 +15,14 @@ public class GameManager : Singleton<GameManager>
         var go = new GameObject("Game Grid");
         GameGridView = go.AddComponent<GridView>();
         GameGridView.Init(GameGrid);
-        StructureDataSet.Load();
-        BlockDataSet.Load();
+        Data.Init();
 
         BlockPlacementManager.Instance.Init();
         StructurePlacementManager.Instance.Init();
         StructureSelectionManager.Instance.Init();
 
         var halfWidth = (Constants.GAME_GRID_SIZE - 1) / 2;
-        BlockPlacementManager.Instance.PlaceBlockWithCode(halfWidth, halfWidth, 0);
+        BlockPlacementManager.Instance.PlaceBlockWithCode(halfWidth, halfWidth, 0, new Direction());
 
         CanvasManager.Instance.SetState(CanvasState.standard);
 

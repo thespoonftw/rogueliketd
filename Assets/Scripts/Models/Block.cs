@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Block {
 
-    public BlockData data;
+    public DataBlock data;
     public readonly int X;
     public readonly int Z;
     private readonly Grid grid;
@@ -21,26 +21,26 @@ public class Block {
         this.grid = grid;
     }
 
-    private void SetPathTiles(BlockData data, int rotationIndex) {
+    private void SetPathTiles(DataBlock data, Direction direction) {
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
             for (int y = 0; y < Constants.BLOCK_SIZE; y++) {
-                if (data.IsPath(x, y, rotationIndex)) {
+                if (data.IsPath(x, y, direction)) {
                     grid.GetTile(X, Z, x, y).SetMode(TileMode.path);
                 }
             }
         }
     }
 
-    public void PlaceTemporaryBlock(BlockData data, int rotationIndex) {
+    public void PlaceTemporaryBlock(DataBlock data, Direction direction) {
         IsPlaced = false;
         GetAllTiles().ForEach(t => t.SetMode(TileMode.available));
-        SetPathTiles(data, rotationIndex);
+        SetPathTiles(data, direction);
     }
 
-    public void PlaceBlock(BlockData data, int rotationIndex) {
+    public void PlaceBlock(DataBlock data, Direction direction) {
         IsPlaced = true;
         GetAllTiles().ForEach(t => t.SetMode(TileMode.available));
-        SetPathTiles(data, rotationIndex);
+        SetPathTiles(data, direction);
     }
 
     public void ClearBlock() {
@@ -48,12 +48,12 @@ public class Block {
         GetAllTiles().ForEach(t => t.SetMode(TileMode.noBlock));
     }
 
-    public Tile GetTileAtEdge(Direction side) {
-        switch (side) {
-            case Direction.south: return grid.GetTile(this, 3, 0);
-            case Direction.west: return grid.GetTile(this, 0, 3);
-            case Direction.north: return grid.GetTile(this, 3, 6);
-            case Direction.east: return grid.GetTile(this, 6, 3);
+    public Tile GetTileAtEdge(Direction direction) {
+        switch (direction.Value) {
+            case DirectionValue.south: return grid.GetTile(this, 3, 0);
+            case DirectionValue.west: return grid.GetTile(this, 0, 3);
+            case DirectionValue.north: return grid.GetTile(this, 3, 6);
+            case DirectionValue.east: return grid.GetTile(this, 6, 3);
         }
         return null;
     }
@@ -62,26 +62,26 @@ public class Block {
         return grid.GetTile(this, 3, 3);
     }
 
-    public Block GetAdjacentBlock(Direction side) {
-        switch (side) {
-            case Direction.south: return grid.GetBlock(X, Z - 1);
-            case Direction.north: return grid.GetBlock(X, Z + 1);
-            case Direction.east: return grid.GetBlock(X + 1, Z);
-            case Direction.west: return grid.GetBlock(X - 1, Z);
+    public Block GetAdjacentBlock(Direction direction) {
+        switch (direction.Value) {
+            case DirectionValue.south: return grid.GetBlock(X, Z - 1);
+            case DirectionValue.north: return grid.GetBlock(X, Z + 1);
+            case DirectionValue.east: return grid.GetBlock(X + 1, Z);
+            case DirectionValue.west: return grid.GetBlock(X - 1, Z);
         }
         return null;
     }
 
     public bool IsValidBlockPlacement() {
         if (IsPlaced) { return false; }
-        var noNeighbours = Constants.ALL_DIRECTIONS.All(dir => GetAdjacentBlock(dir) != null && !GetAdjacentBlock(dir).IsPlaced);
+        var noNeighbours = Direction.GetAll().All(dir => GetAdjacentBlock(dir) != null && !GetAdjacentBlock(dir).IsPlaced);
         if (noNeighbours) { return false; }
-        foreach (var dir in Constants.ALL_DIRECTIONS) {
+        foreach (var dir in Direction.GetAll()) {
             var adj = GetAdjacentBlock(dir);
             if (adj == null) { return false; }
             var t1 = GetTileAtEdge(dir);
-            var t2 = adj.GetTileAtEdge(Tools.GetOppositeSide(dir));
-            if (adj.IsPlaced && GetTileAtEdge(dir).Mode != adj.GetTileAtEdge(Tools.GetOppositeSide(dir)).Mode) { return false; }
+            var t2 = adj.GetTileAtEdge(dir.GetOppositeDirection());
+            if (adj.IsPlaced && GetTileAtEdge(dir).Mode != adj.GetTileAtEdge(dir.GetOppositeDirection()).Mode) { return false; }
         }
         return true;
     }
