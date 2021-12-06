@@ -1,6 +1,6 @@
-name,points,speed,health
-tiny,1,16,10
-small,3,8,40
-medium,9,4,160
-large,27,2,640
-huge,81,1,2560
+index,name,points,speed,health,scale
+0,tiny,1,16,10,1
+1,small,3,8,40,1.3
+2,medium,9,4,160,1.6
+3,large,27,2,640,2
+4,huge,81,1,2560,2.5

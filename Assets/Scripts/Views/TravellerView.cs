@@ -38,7 +38,7 @@ public class TravellerView : MonoBehaviour {
 
     private void UpdatePosition() {
         if (model.NextTile == null) {
-            GameManager.Instance.FinishTravellerPath();
+            WaveManager.Instance.FinishTravellerPath();
             Destroy(gameObject);            
         } else {
             var lambda = timeSinceStep / timeStep;

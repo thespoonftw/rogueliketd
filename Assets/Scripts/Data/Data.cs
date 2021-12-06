@@ -8,12 +8,16 @@ public class Data {
 
     public static CsvData<DataStructure> Structures;
     public static CsvData<DataBlock> Blocks;
-    public static CsvData<DataEnemySpawnChance> EnemySpawnChance;
+    public static CsvData<DataEnemySpawnChance> EnemySpawnChances;
+    public static CsvData<DataEnemyStat> EnemyStats;
+    public static CsvData<DataEnemyType> EnemyTypes;
 
     public static void Init() {
-        Structures = new CsvData<DataStructure>("Structures", x => new DataStructure(x));
-        Blocks = new CsvData<DataBlock>("Blocks", x => new DataBlock(x));
-        EnemySpawnChance = new CsvData<DataEnemySpawnChance>("EnemySpawnChance", x => new DataEnemySpawnChance(x));
+        Structures = new CsvData<DataStructure>("Structures");
+        Blocks = new CsvData<DataBlock>("Blocks");
+        EnemySpawnChances = new CsvData<DataEnemySpawnChance>("EnemySpawnChance");
+        EnemyStats = new CsvData<DataEnemyStat>("EnemyStats");
+        EnemyTypes = new CsvData<DataEnemyType>("EnemyTypes");
 
     }
 }

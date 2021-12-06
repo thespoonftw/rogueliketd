@@ -8,11 +8,11 @@ public class CsvData<T> where T : CsvDataEntry {
 
     private static List<T> list = new List<T>();
 
-    public CsvData(string filename, Func<List<string>, T> creator) {
+    public CsvData(string filename) {
         var data = LoadFile(filename);
         foreach (var d in data) {
-            var item = creator(d);
-            list.Add(item);
+            var entry = (T)Activator.CreateInstance(typeof(T), new object[] { d });
+            list.Add(entry);
         }
     }
 

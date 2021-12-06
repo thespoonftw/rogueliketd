@@ -14,26 +14,46 @@ public enum CanvasState {
 public class CanvasManager : Singleton<CanvasManager>
 {
     [SerializeField] GameObject standardToggle;
+    [SerializeField] GameObject roundNotInProgressToggle;
     [SerializeField] GameObject blockChooserToggle;
     [SerializeField] GameObject blockPlacingToggle;
     [SerializeField] GameObject structurePlacingToggle;
     [SerializeField] GameObject structureChoosingToggle;
     [SerializeField] Text goldText;
 
+    private bool isRoundInProgress;
+    private CanvasState currentState;
+
+    public void Init() {
+        SetState(CanvasState.standard);
+        WaveManager.Instance.OnRoundInProgress += SetRoundInProgress;
+    }
+
     public void SetState(CanvasState state) {
-        standardToggle.SetActive(state == CanvasState.standard);
-        blockChooserToggle.SetActive(state == CanvasState.blockChoosing);
-        blockPlacingToggle.SetActive(state == CanvasState.blockPlacing);
-        structurePlacingToggle.SetActive(state == CanvasState.structurePlacing);
-        structureChoosingToggle.SetActive(state == CanvasState.structureChoosing);
+        currentState = state;
+        UpdateState();
+    }
+
+    public void SetRoundInProgress(bool isInProgress) {
+        isRoundInProgress = isInProgress;
+        UpdateState();
+    }
+
+    private void UpdateState() {
+        standardToggle.SetActive(currentState == CanvasState.standard);
+        roundNotInProgressToggle.SetActive(currentState == CanvasState.standard && !isRoundInProgress);
+        blockChooserToggle.SetActive(currentState == CanvasState.blockChoosing);
+        blockPlacingToggle.SetActive(currentState == CanvasState.blockPlacing);
+        structurePlacingToggle.SetActive(currentState == CanvasState.structurePlacing);
+        structureChoosingToggle.SetActive(currentState == CanvasState.structureChoosing);
     }
 
     public void StartChoosingBlock() {
         SetState(CanvasState.blockChoosing);
     }
 
-    public void SendTraveller() {
-        GameManager.Instance.SendTraveller();
+    public void StartRound() {
+        WaveManager.Instance.StartWave();
     }
 
     public void BlockChosen(int index) {
