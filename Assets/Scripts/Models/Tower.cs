@@ -23,11 +23,7 @@ public class Tower {
     }
 
     private List<Enemy> GetEnemies() {
-        return isRangedAttacker ? GetEnemiesRanged() : GetEnemiesMelee();
-    }
-
-    private List<Enemy> GetEnemiesMelee() {
-        return structure.GetAreaOfEffect().SelectMany(t => t.GetEnemies()).Distinct().ToList();
+        return null;
     }
 
     private List<Enemy> GetEnemiesRanged() {

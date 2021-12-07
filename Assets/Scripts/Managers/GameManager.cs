@@ -7,6 +7,7 @@ public class GameManager : Singleton<GameManager>
     public Grid GameGrid { get; private set; }
     public GridView GameGridView { get; private set; }
     public int Gold { get; private set; }
+    public int Lives { get; private set; }
 
     public void Start() {
         GameGrid = new Grid(Constants.GAME_GRID_SIZE);
@@ -27,10 +28,16 @@ public class GameManager : Singleton<GameManager>
         
 
         ModifyGold(500);
+        ModifyLives(25);
     }
 
     public void ModifyGold(int amount) {
         Gold += amount;
         CanvasManager.Instance.SetGoldText(Gold);
+    }
+
+    public void ModifyLives(int amount) {
+        Lives += amount;
+        CanvasManager.Instance.SetLivesText(Lives);
     }
 }

@@ -20,6 +20,7 @@ public class CanvasManager : Singleton<CanvasManager>
     [SerializeField] GameObject structurePlacingToggle;
     [SerializeField] GameObject structureChoosingToggle;
     [SerializeField] Text goldText;
+    [SerializeField] Text livesText;
 
     private bool isRoundInProgress;
     private CanvasState currentState;
@@ -86,6 +87,10 @@ public class CanvasManager : Singleton<CanvasManager>
 
     public void SetGoldText(int amount) {
         goldText.text = "Gold: " + amount.ToString();
+    }
+
+    public void SetLivesText(int amount) {
+        livesText.text = "Lives: " + amount.ToString();
     }
 
 }

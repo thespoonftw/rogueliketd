@@ -8,7 +8,6 @@ public class Structure {
     public readonly DataStructure data;
 
     private List<Tile> occupiedTiles = new List<Tile>();
-    private List<Tile> areaOfEffect = new List<Tile>();
 
     public Structure(DataStructure data, Tile originTile, Direction direction) {
 
@@ -29,9 +28,6 @@ public class Structure {
             var tower = new Tower(this);
         }        
     }
-    
-    public List<Tile> GetAreaOfEffect() {
-        return new List<Tile>(areaOfEffect);
-    }
+   
 
 }

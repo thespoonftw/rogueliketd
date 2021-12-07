@@ -5,20 +5,23 @@ using UnityEngine;
 
 public class WaveManager : Singleton<WaveManager>
 {
-    
-
     [SerializeField] GameObject travellerPrefab;
 
     public event Action<bool> OnRoundInProgress;
 
+    public float SpeedModifier { get; private set; } = 0.1f;
+
     private float timeTilNextSpawn;
-    private int livingEnemies = 0;
     private bool spawningInProgress;
     private int pointsPerWave = 10;
     private int waveSizeIndex = 5;
     private const int waveDuration = 20;
     private float timeInWave;
     private int pointsPerSecond;
+    private List<Enemy> livingEnemies = new List<Enemy>();
+    
+
+    private DataEnemyStat upcomingEnemy;
 
     public void StartWave() {
         CanvasManager.Instance.SetRoundInProgress(true);
@@ -28,29 +31,44 @@ public class WaveManager : Singleton<WaveManager>
         pointsPerWave += 10;
         timeInWave = 0;
         pointsPerSecond = pointsPerWave / waveDuration;
+        upcomingEnemy = GetNextEnemy();
     }
 
     private void Update() {
         if (!spawningInProgress) { return; }
-        timeTilNextSpawn -= Time.deltaTime;
-        if (timeTilNextSpawn > 0) { return; }
-        var enemySize = Data.EnemySpawnChances.GetEntry(waveSizeIndex).RandomlySelectSize();
-        var enemyStats = Data.EnemyStats.GetEntry(enemySize);
-        timeTilNextSpawn += (enemyStats.points / pointsPerSecond);
-        var go = Instantiate(travellerPrefab, new Vector3(), Quaternion.identity, transform);
-        go.transform.localScale = new Vector3(enemyStats.scale, enemyStats.scale, enemyStats.scale);
-        go.GetComponent<TravellerView>().Init();
-        livingEnemies++;
         timeInWave += Time.deltaTime;
-        if (timeInWave >= waveDuration) { spawningInProgress = false; }
+        timeTilNextSpawn -= Time.deltaTime;
+        if (timeInWave >= waveDuration) {
+            spawningInProgress = false;
+        } else if (timeTilNextSpawn <= 0) {
+            SpawnEnemy();
+        }
     }
 
-    public void FinishTravellerPath() {
-        livingEnemies--;
-        if (livingEnemies == 0 && !spawningInProgress) {
+    private void SpawnEnemy() {
+        var enemyToSpawn = upcomingEnemy;
+        upcomingEnemy = GetNextEnemy();
+        timeTilNextSpawn += ((enemyToSpawn.points + upcomingEnemy.points) / (float)pointsPerSecond) / 2f;
+        var go = Instantiate(travellerPrefab, new Vector3(), Quaternion.identity, transform);
+        var scale = enemyToSpawn.scale;
+        go.transform.localScale = new Vector3(scale, scale, scale);
+        var centre = (Constants.GAME_GRID_SIZE - 1) / 2;
+        var enemy = new Enemy(GameManager.Instance.GameGrid, GameManager.Instance.GameGrid.GetBlock(centre, centre), enemyToSpawn);
+        go.GetComponent<EnemyView>().Init(enemy);
+        livingEnemies.Add(enemy);
+    }
+
+    private DataEnemyStat GetNextEnemy() {
+        var enemySize = Data.EnemySpawnChances.GetEntry(waveSizeIndex).RandomlySelectSize();
+        return Data.EnemyStats.GetEntry(enemySize);
+    }
+
+    public void FinishTravellerPath(Enemy enemy) {
+        livingEnemies.Remove(enemy);
+        if (livingEnemies.Count == 0 && !spawningInProgress) {
             OnRoundInProgress?.Invoke(false);
         }
-        // do something?
+        GameManager.Instance.ModifyLives(-1);
     }
 
 }
