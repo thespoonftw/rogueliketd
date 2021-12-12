@@ -21,7 +21,7 @@ public class GameManager : Singleton<GameManager>
         StructureSelectionManager.Instance.Init();
 
         var halfWidth = (Constants.GAME_GRID_SIZE - 1) / 2;
-        BlockPlacementManager.Instance.PlaceBlockWithCode(halfWidth, halfWidth, 0, new Direction());
+        BlockPlacementManager.Instance.PlaceBlockWithCode(new Coords(halfWidth, halfWidth), 0, new Direction());
 
         CanvasManager.Instance.Init();
 

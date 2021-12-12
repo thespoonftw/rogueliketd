@@ -10,10 +10,9 @@ public class EnemyView : MonoBehaviour {
     [SerializeField] GameObject healthBarBlack;
 
     private Enemy model;
-    private GridView gameGridView;
 
     public void Init(Enemy model) {
-        gameGridView = GameManager.Instance.GameGridView;
+        Debug.Log("init");
         this.model = model;
         model.OnDeath += Destroy;
         model.OnPosition += UpdatePosition;
@@ -31,11 +30,12 @@ public class EnemyView : MonoBehaviour {
     }
 
     private void UpdateTile() {
+        if (model.NextTile != null) {
+            var prev = model.PrevTile.position;
+            var next = model.NextTile.position;
+            transform.rotation = Quaternion.LookRotation(next - prev, Vector3.up);
+        }
         healthBarParent.transform.rotation = Quaternion.identity;
-        if (model.NextTile == null) { return; }
-        var prev = gameGridView.GetTilePosition(model.PrevTile);
-        var next = gameGridView.GetTilePosition(model.NextTile);
-        transform.rotation = Quaternion.LookRotation(next - prev, Vector3.up);
     }
 
     private void OnDestroy() {

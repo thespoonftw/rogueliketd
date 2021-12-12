@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class BlockView : MonoBehaviour {
 
-    private GridView gridView;
     private Block model;
     private BlockPlacementManager blockPlacer;
 
     [SerializeField] GameObject highlight;
 
-    public void Init(Block model, GridView gridView) {
+    public void Init(Block model) {
         this.model = model;
-        this.gridView = gridView;
         blockPlacer = BlockPlacementManager.Instance;
         model.OnHighlightColour += SetHighlightColour;
     }

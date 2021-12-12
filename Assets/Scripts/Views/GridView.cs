@@ -23,7 +23,7 @@ public class GridView : MonoBehaviour
                 var go = Instantiate(Prefabs.Instance.blockViewPrefab, transform.position + GetBlockPosition(x, z), Quaternion.identity, blockViewsParent.transform);
                 go.name = "Block[" + x + "," + z + "]";
                 var view = go.GetComponent<BlockView>();
-                view.Init(grid.GetBlock(x, z), this);
+                view.Init(grid.GetBlock(new Coords(x, z)));
                 blockViews[x, z] = view;
             }
         }
@@ -33,10 +33,11 @@ public class GridView : MonoBehaviour
         tileViewsParent.transform.position = transform.position;
         for (int x = 0; x < gridSize * blockSize; x++) {
             for (int z = 0; z < gridSize * blockSize; z++) {
-                var go = Instantiate(Prefabs.Instance.tileViewPrefab, transform.position + GetTilePosition(x, z), Quaternion.identity, tileViewsParent.transform);
+                var pos = new Vector3(x, 0, z);
+                var go = Instantiate(Prefabs.Instance.tileViewPrefab, transform.position + pos, Quaternion.identity, tileViewsParent.transform);
                 go.name = "Tile[" + x + "," + z + "]";
                 var view = go.GetComponent<TileView>();
-                view.Init(grid.GetTile(x, z), this);
+                view.Init(grid.GetTile(x, z));
                 tileViews[x, z] = view;
             }
         }
@@ -44,13 +45,5 @@ public class GridView : MonoBehaviour
 
     public Vector3 GetBlockPosition(int x, int z) {
         return new Vector3(x * Constants.BLOCK_SIZE, 0, z * Constants.BLOCK_SIZE);
-    }
-
-    public Vector3 GetTilePosition(int x, int z) {
-        return new Vector3(x, 0, z);
-    }
-
-    public Vector3 GetTilePosition(Tile tile) {
-        return GetTilePosition(tile.X, tile.Z);
     }
 }

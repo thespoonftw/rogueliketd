@@ -52,8 +52,8 @@ public class WaveManager : Singleton<WaveManager>
         var go = Instantiate(travellerPrefab, new Vector3(), Quaternion.identity, transform);
         var scale = enemyToSpawn.scale;
         go.transform.localScale = new Vector3(scale, scale, scale);
-        var centre = (Constants.GAME_GRID_SIZE - 1) / 2;
-        var enemy = new Enemy(GameManager.Instance.GameGrid, GameManager.Instance.GameGrid.GetBlock(centre, centre), enemyToSpawn);
+        
+        var enemy = new Enemy(GameManager.Instance.GameGrid, GameManager.Instance.GameGrid.GetStartBlock(), enemyToSpawn);
         go.GetComponent<EnemyView>().Init(enemy);
         livingEnemies.Add(enemy);
     }

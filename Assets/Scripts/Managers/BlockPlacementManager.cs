@@ -65,9 +65,9 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         CanvasManager.Instance.FinishPlacingBlock();
     }
 
-    public void PlaceBlockWithCode(int x, int y, int blockIndex, Direction direction) {
+    public void PlaceBlockWithCode(Coords blockCoords, int blockIndex, Direction direction) {
         var blockData = Data.Blocks.GetEntry(blockIndex);
-        var block = GameGrid.GetBlock(x, y);
+        var block = GameGrid.GetBlock(blockCoords);
         block.PlaceBlock(blockData, direction);
     }
 
@@ -78,7 +78,7 @@ public class BlockPlacementManager : Singleton<BlockPlacementManager>
         gridgo.transform.position = previewTransform.position;
         var gridView = gridgo.AddComponent<GridView>();
         gridView.Init(grid);
-        var block = grid.GetBlock(0, 0);
+        var block = grid.GetBlock(new Coords(0, 0));
         block.PlaceBlock(Data.Blocks.GetEntry(dataIndex), new Direction());
     }
 

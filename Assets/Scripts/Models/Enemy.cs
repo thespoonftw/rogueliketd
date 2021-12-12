@@ -51,9 +51,7 @@ public class Enemy {
             OnDeath.Invoke();            
         } else {
             var lambda = timeSinceStep * speed;
-            var prev = game.GameGridView.GetTilePosition(PrevTile);
-            var next = game.GameGridView.GetTilePosition(NextTile);
-            CurrentPosition = Vector3.Lerp(prev, next, lambda);
+            CurrentPosition = Vector3.Lerp(PrevTile.position, NextTile.position, lambda);
             OnPosition.Invoke();
         }
     }
@@ -63,7 +61,7 @@ public class Enemy {
         var prev = PrevTile;
         PrevTile = NextTile;
         NextTile = NextTile.GetNextPath(prev);
-        OnTileChange.Invoke();
+        OnTileChange?.Invoke();
     }
     
 }

@@ -7,25 +7,24 @@ using UnityEngine;
 public class Block {
 
     public DataBlock data;
-    public readonly int X;
-    public readonly int Z;
+    public readonly Coords blockCoords;
     private readonly Grid grid;
 
     public bool IsPlaced { get; private set; }
 
     public event Action<Colour> OnHighlightColour; 
 
-    public Block(int x, int z, Grid grid) {
-        this.X = x;
-        this.Z = z;
+    public Block(Coords blockCoords, Grid grid) {
+        this.blockCoords = blockCoords;
         this.grid = grid;
     }
 
     private void SetPathTiles(DataBlock data, Direction direction) {
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
-            for (int y = 0; y < Constants.BLOCK_SIZE; y++) {
-                if (data.IsPath(x, y, direction)) {
-                    grid.GetTile(X, Z, x, y).SetMode(TileMode.path);
+            for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
+                var coords = new Coords(x, z);
+                if (data.IsPath(coords, direction)) {
+                    grid.GetTile(blockCoords, coords).SetMode(TileMode.path);
                 }
             }
         }
@@ -50,26 +49,20 @@ public class Block {
 
     public Tile GetTileAtEdge(Direction direction) {
         switch (direction.Value) {
-            case DirectionValue.south: return grid.GetTile(this, 3, 0);
-            case DirectionValue.west: return grid.GetTile(this, 0, 3);
-            case DirectionValue.north: return grid.GetTile(this, 3, 6);
-            case DirectionValue.east: return grid.GetTile(this, 6, 3);
+            case DirectionValue.south: return grid.GetTile(this, new Coords(3, 0));
+            case DirectionValue.west: return grid.GetTile(this, new Coords(0, 3));
+            case DirectionValue.north: return grid.GetTile(this, new Coords(3, 6));
+            case DirectionValue.east: return grid.GetTile(this, new Coords(6, 3));
         }
         return null;
     }
 
     public Tile GetStartPath() {
-        return grid.GetTile(this, 3, 3);
+        return grid.GetTile(this, new Coords(3, 3));
     }
 
     public Block GetAdjacentBlock(Direction direction) {
-        switch (direction.Value) {
-            case DirectionValue.south: return grid.GetBlock(X, Z - 1);
-            case DirectionValue.north: return grid.GetBlock(X, Z + 1);
-            case DirectionValue.east: return grid.GetBlock(X + 1, Z);
-            case DirectionValue.west: return grid.GetBlock(X - 1, Z);
-        }
-        return null;
+        return grid.GetBlock(blockCoords.Neighbour(direction.Value));
     }
 
     public bool IsValidBlockPlacement() {
@@ -93,11 +86,10 @@ public class Block {
     public List<Tile> GetAllTiles() {
         var returner = new List<Tile>();
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
-            for (int y = 0; y < Constants.BLOCK_SIZE; y++) {
-                returner.Add(grid.GetTile(this, x, y));
+            for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
+                returner.Add(grid.GetTile(this, new Coords(x, z)));
             }
         }
-
         return returner;
     }
 

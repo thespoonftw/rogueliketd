@@ -11,7 +11,7 @@ public enum DirectionValue {
     west
 }
 
-public class Direction {
+public struct Direction {
 
     public DirectionValue Value { get; private set; }
 
@@ -19,10 +19,6 @@ public class Direction {
 
     public float YAngle => IntValue * 90;
     public Quaternion Quaternion => Quaternion.Euler(0, YAngle, 0);
-
-    public Direction() {
-        Value = DirectionValue.north;
-    }
 
     public Direction(DirectionValue value) {
         Value = value;
@@ -37,14 +33,14 @@ public class Direction {
     }
 
 
-    public Coords GetCoordsAfterRotation(int x, int z, int xOrigin = 0, int zOrigin = 0) {
-        var dx = x - xOrigin;
-        var dz = z - zOrigin;
+    public Coords GetCoordsAfterRotation(Coords coords, Coords origin) {
+        var dx = coords.x - origin.x;
+        var dz = coords.z - origin.z;
         switch (IntValue) {
-            default: return new Coords() { x = x, z = z };
-            case 1: return new Coords() { x = zOrigin - dz, z = x };
-            case 2: return new Coords() { x = xOrigin - dx, z = zOrigin - dz };
-            case 3: return new Coords() { x = z, z = xOrigin - dx };
+            default: return new Coords() { x = coords.x, z = coords.z };
+            case 1: return new Coords() { x = origin.z - dz, z = coords.x };
+            case 2: return new Coords() { x = origin.x - dx, z = origin.z - dz };
+            case 3: return new Coords() { x = coords.z, z = origin.x - dx };
         }
     }
 
@@ -57,9 +53,9 @@ public class Direction {
         }
     }
 
-    public Coords GetCoordsAfterRotationBlock(int x, int z) {
+    public Coords GetCoordsAfterRotationBlock(Coords coords) {
         var mid = (Constants.BLOCK_SIZE - 1) / 2;
-        return GetCoordsAfterRotation(x, z, mid, mid);
+        return GetCoordsAfterRotation(coords, new Coords(mid, mid));
     }
 
     public static List<Direction> GetAll() {

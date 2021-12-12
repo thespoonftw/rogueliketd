@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TileView : MonoBehaviour {
 
-    private GridView gridView;
     private Tile model;
     private StructurePlacementManager structurePlacer;
 
@@ -13,9 +12,8 @@ public class TileView : MonoBehaviour {
     [SerializeField] GameObject regular;
     [SerializeField] GameObject underground;
 
-    public void Init(Tile model, GridView gridView) {
+    public void Init(Tile model) {
         this.model = model;
-        this.gridView = gridView;
         model.OnTileMode += SetMode;
         structurePlacer = StructurePlacementManager.Instance;
         model.OnHighlightColour += SetHighlightColour;

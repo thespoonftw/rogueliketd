@@ -12,11 +12,11 @@ public enum TileMode {
 
 public class Tile {
 
-    public int X { get; private set; }
-    public int Z { get; private set; }
-
     public TileMode Mode { get; private set; }
     public bool IsOccupied { get { return occupyingStructure != null; } }
+
+    public readonly Vector3 position;
+    public readonly Coords coords;
 
     private readonly Grid grid;
     private Structure occupyingStructure;
@@ -26,11 +26,11 @@ public class Tile {
     public event Action<TileMode> OnTileMode;
     public event Action<Colour> OnHighlightColour;
 
-    public Tile(int x, int y, Grid grid) {
-        X = x;
-        Z = y;
+    public Tile(Coords coords, Grid grid) {
+        this.coords = coords;
         this.grid = grid;
-        block = grid.GetBlock(x / Constants.BLOCK_SIZE, y / Constants.BLOCK_SIZE);
+        position = new Vector3(coords.x, 0, coords.z);
+        block = grid.GetBlock(new Coords(coords.x / Constants.BLOCK_SIZE, coords.z / Constants.BLOCK_SIZE));
         enemies = new List<Enemy>();
     }
 
@@ -44,13 +44,7 @@ public class Tile {
     }
 
     public Tile GetAdjacentTile(Direction direction) {
-        switch (direction.Value) {
-            case DirectionValue.south: return grid.GetTile(X, Z - 1);
-            case DirectionValue.north: return grid.GetTile(X, Z + 1);
-            case DirectionValue.east: return grid.GetTile(X + 1, Z);
-            case DirectionValue.west: return grid.GetTile(X - 1, Z);
-        }
-        return null;
+        return grid.GetTile(Coords.Neighbour(direction.Value));
     }
 
     public Tile GetNextPath(Tile previous) {

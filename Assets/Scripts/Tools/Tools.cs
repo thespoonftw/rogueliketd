@@ -10,12 +10,6 @@ public enum Colour {
     white,
 }
 
-public struct Coords {
-    public int x;
-    public int z;
-}
-
-
 public class Tools
 {   
     public static T GetEnum<T>(string s) where T : struct {

@@ -18,32 +18,39 @@ public class Grid {
 
         for (int x=0; x<gridSize; x++) {
             for (int z=0; z<gridSize; z++) {
-                blockArray[x, z] = new Block(x, z, this);
+                blockArray[x, z] = new Block(new Coords(x, z), this);
             }
         }
 
         for (int x=0; x< numberOfTiles; x++) {
             for (int z=0; z< numberOfTiles; z++) {
-                tileArray[x, z] = new Tile(x, z, this);
+                tileArray[x, z] = new Tile(new Coords(x, z), this);
             }
         }
     }
 
-    public Block GetBlock(int x, int z) {
-        if (x < 0 || z < 0 || x >= numberOfBlocks || z >= numberOfBlocks) { return null; }
-        return blockArray[x, z];
+    public Block GetStartBlock() {
+        var centre = (Constants.GAME_GRID_SIZE - 1) / 2;
+        return GetBlock(new Coords(centre, centre));
     }
 
-    public Tile GetTile(int x, int z) {
-        if (x < 0 || z < 0 || x >= numberOfTiles || z >= numberOfTiles) { return null; }
-        return tileArray[x, z];
+    public Block GetBlock(Coords blockCoords) {
+        if (blockCoords.x < 0 || blockCoords.z < 0 || blockCoords.x >= numberOfBlocks || blockCoords.z >= numberOfBlocks) { return null; }
+        return blockArray[blockCoords.x, blockCoords.z];
     }
 
-    public Tile GetTile(int blockX, int blockZ, int tileX, int tileZ) {
-        return tileArray[blockX * Constants.BLOCK_SIZE + tileX, blockZ * Constants.BLOCK_SIZE + tileZ];
+    public Tile GetTile(int x, int z) => GetTile(new Coords(x, z));
+
+    public Tile GetTile(Coords coords) {
+        if (coords.x < 0 || coords.z < 0 || coords.x >= numberOfTiles || coords.z >= numberOfTiles) { return null; }
+        return tileArray[coords.x, coords.z];
     }
 
-    public Tile GetTile(Block block, int x, int z) {
-        return GetTile(block.X, block.Z, x, z);
+    public Tile GetTile(Block block, Coords tileCoords) {
+        return GetTile(block.blockCoords, tileCoords);
+    }
+
+    public Tile GetTile(Coords blockCoords, Coords tileCoords) {
+        return tileArray[blockCoords.x * Constants.BLOCK_SIZE + tileCoords.x, blockCoords.z * Constants.BLOCK_SIZE + tileCoords.z];
     }
 }

@@ -50,6 +50,7 @@ public class DataStructure : CsvDataEntry {
     public readonly bool isRotatable;
     public readonly float range;
     public readonly bool isEvenWidth;
+    public readonly float rate;
 
     public DataStructure(List<string> line) {
         name = line[0];
@@ -64,6 +65,7 @@ public class DataStructure : CsvDataEntry {
         isRotatable = Tools.ParseBool(line[9]);
         range = float.Parse(line[10]);
         isEvenWidth = Tools.ParseBool(line[11]);
+        rate = float.Parse(line[12]);
 
         var placementMap = ImageMaps.GetStructureMap(pathIndex);
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
@@ -74,8 +76,8 @@ public class DataStructure : CsvDataEntry {
         }
     }
 
-    public PathingRule GetPathingRule(int x, int z) {
-        return placementArray[x, z];
+    public PathingRule GetPathingRule(Coords coords) {
+        return placementArray[coords.x, coords.z];
     }
 
     public bool GetIsArea(int x, int z) {

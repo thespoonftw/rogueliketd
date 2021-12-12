@@ -32,7 +32,7 @@ public class TowerRangeView : MonoBehaviour {
     public void ShowSquareRange(DataStructure data, Tile tile, Direction direction, int width, int length, int offset) {
         lineRender.enabled = true;
         lineRender.positionCount = 5;
-        var centre = GameManager.Instance.GameGridView.GetTilePosition(tile) + new Vector3(0, 0.1f, 0);
+        var centre = tile.position + new Vector3(0, 0.1f, 0);
         var v1 = direction.GetVectorAfterRotation(new Vector3(0.5f - offset,          0, -0.5f + width));
         var v2 = direction.GetVectorAfterRotation(new Vector3(0.5f - offset - length, 0, -0.5f + width));
         var v3 = direction.GetVectorAfterRotation(new Vector3(0.5f - offset - length, 0, -0.5f));
@@ -48,7 +48,7 @@ public class TowerRangeView : MonoBehaviour {
     public void ShowCircularRange(DataStructure data, Tile tile) {
         lineRender.enabled = true;
         var offset = data.isEvenWidth ? new Vector3(0.5f, 0.1f, 0.5f) : new Vector3(0, 0.1f, 0);
-        var centre = GameManager.Instance.GameGridView.GetTilePosition(tile) + offset;
+        var centre = tile.position + offset;
         var numberOfPoints = GetNumberOfPointsForRange(data.range);
         var angleBetweenPoints = 360f / numberOfPoints;
         lineRender.positionCount = numberOfPoints + 1;
@@ -61,7 +61,7 @@ public class TowerRangeView : MonoBehaviour {
     public void ShowArcRange(DataStructure data, Tile tile, Direction direction, float angle) {
         lineRender.enabled = true;
         var offset = data.isEvenWidth ? direction.GetVectorAfterRotation(new Vector3(0.5f, 0.1f, 0.5f)) : new Vector3(0, 0.1f, 0);
-        var centre = GameManager.Instance.GameGridView.GetTilePosition(tile) + offset;
+        var centre = tile.position + offset;
         var range = data.range;
         var numberOfPoints = Mathf.RoundToInt(GetNumberOfPointsForRange(range) * (angle / 360));
         var angleBetweenPoints = angle / numberOfPoints;

@@ -14,8 +14,8 @@ public class Structure {
         var half = (Constants.BLOCK_SIZE - 1) / 2;
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
             for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
-                var coords = direction.GetCoordsAfterRotationBlock(x, z);
-                var placementRule = data.GetPathingRule(coords.x, coords.z);
+                var coords = direction.GetCoordsAfterRotationBlock(new Coords(x, z));
+                var placementRule = data.GetPathingRule(coords);
                 if (placementRule == PathingRule.none || placementRule == PathingRule.atleastOnePath) { continue; }
                 var tile = GameManager.Instance.GameGrid.GetTile(x + originTile.X - half, z + originTile.Z - half);
                 occupiedTiles.Add(tile);
@@ -25,7 +25,7 @@ public class Structure {
 
         if (data.action != StructureAction.beacon && data.action != StructureAction.shrine)
         {
-            var tower = new Tower(this);
+            var tower = new Tower(this, data);
         }        
     }
    

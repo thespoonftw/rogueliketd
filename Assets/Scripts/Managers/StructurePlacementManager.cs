@@ -43,8 +43,8 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
         bool? atleastOnePath = null;
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
             for (int z = 0; z < Constants.BLOCK_SIZE; z++) {
-                var coords = currentDirection.GetCoordsAfterRotationBlock(x, z);
-                var placementRule = data.GetPathingRule(coords.x, coords.z);
+                var coords = currentDirection.GetCoordsAfterRotationBlock(new Coords(x, z));
+                var placementRule = data.GetPathingRule(coords);
                 if (placementRule == PathingRule.none) { continue; }
                 var tileToCheck = grid.GetTile(focusedTile.X - half + x, focusedTile.Z - half + z);
                 if (tileToCheck.IsOccupied) { return false; }
@@ -77,8 +77,7 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
         if (!isPlacingStructureEnabled) { return; }
         if (!isValid) { return; }
         if (game.Gold < structureData.cost) { return; }
-        var pos = game.GameGridView.GetTilePosition(focusedTile.X, focusedTile.Z);
-        var go = Instantiate(Prefabs.Instance.structurePrefab, pos, Quaternion.identity, transform);
+        var go = Instantiate(Prefabs.Instance.structurePrefab, focusedTile.position, Quaternion.identity, transform);
         var view = go.GetComponent<StructureView>();
         view.Init(structureData, currentDirection);
         var structure = new Structure(structureData, focusedTile, currentDirection);

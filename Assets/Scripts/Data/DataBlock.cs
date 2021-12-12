@@ -20,8 +20,8 @@ public class DataBlock : CsvDataEntry {
         }
     }
 
-    public bool IsPath(int x, int z, Direction direction) {
-        var coords = direction.GetCoordsAfterRotationBlock(x, z);
-        return array[coords.x, coords.z];
+    public bool IsPath(Coords coords, Direction direction) {
+        var after = direction.GetCoordsAfterRotationBlock(coords);
+        return array[after.x, after.z];
     }
 }
