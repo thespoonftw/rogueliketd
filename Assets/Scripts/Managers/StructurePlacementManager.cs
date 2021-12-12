@@ -46,7 +46,7 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
                 var coords = currentDirection.GetCoordsAfterRotationBlock(new Coords(x, z));
                 var placementRule = data.GetPathingRule(coords);
                 if (placementRule == PathingRule.none) { continue; }
-                var tileToCheck = grid.GetTile(focusedTile.X - half + x, focusedTile.Z - half + z);
+                var tileToCheck = grid.GetTile(focusedTile.coords.x - half + x, focusedTile.coords.z - half + z);
                 if (tileToCheck.IsOccupied) { return false; }
                 if (tileToCheck.Mode == TileMode.noBlock) { return false; }
                 if (placementRule == PathingRule.path && tileToCheck.Mode != TileMode.path) { return false; }
@@ -80,7 +80,7 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
         var go = Instantiate(Prefabs.Instance.structurePrefab, focusedTile.position, Quaternion.identity, transform);
         var view = go.GetComponent<StructureView>();
         view.Init(structureData, currentDirection);
-        var structure = new Structure(structureData, focusedTile, currentDirection);
+        var structure = new Structure(structureData, focusedTile, currentDirection, focusedTile.position); // centre position, not correctly set
         game.ModifyGold(-structureData.cost);
         FocusTile(focusedTile);
     }

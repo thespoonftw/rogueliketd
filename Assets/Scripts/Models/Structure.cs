@@ -6,10 +6,13 @@ using UnityEngine;
 public class Structure {
 
     public readonly DataStructure data;
+    public readonly Vector3 position;
 
     private List<Tile> occupiedTiles = new List<Tile>();
 
-    public Structure(DataStructure data, Tile originTile, Direction direction) {
+    public Structure(DataStructure data, Tile originTile, Direction direction, Vector3 position) {
+
+        this.position = position;
 
         var half = (Constants.BLOCK_SIZE - 1) / 2;
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
@@ -17,7 +20,7 @@ public class Structure {
                 var coords = direction.GetCoordsAfterRotationBlock(new Coords(x, z));
                 var placementRule = data.GetPathingRule(coords);
                 if (placementRule == PathingRule.none || placementRule == PathingRule.atleastOnePath) { continue; }
-                var tile = GameManager.Instance.GameGrid.GetTile(x + originTile.X - half, z + originTile.Z - half);
+                var tile = GameManager.Instance.GameGrid.GetTile(x + originTile.coords.x - half, z + originTile.coords.z - half);
                 occupiedTiles.Add(tile);
             }
         }

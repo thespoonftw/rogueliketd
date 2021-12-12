@@ -12,7 +12,6 @@ public class EnemyView : MonoBehaviour {
     private Enemy model;
 
     public void Init(Enemy model) {
-        Debug.Log("init");
         this.model = model;
         model.OnDeath += Destroy;
         model.OnPosition += UpdatePosition;

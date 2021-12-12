@@ -44,7 +44,7 @@ public class Tile {
     }
 
     public Tile GetAdjacentTile(Direction direction) {
-        return grid.GetTile(Coords.Neighbour(direction.Value));
+        return grid.GetTile(coords.Neighbour(direction.Value));
     }
 
     public Tile GetNextPath(Tile previous) {

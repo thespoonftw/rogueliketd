@@ -28,7 +28,7 @@ public class StructurePlacementView : MonoBehaviour {
         }
 
         if (tile != null) {
-            var pos = game.GameGridView.GetTilePosition(tile);
+            var pos = tile.position;
             if (ghostStructure == null) {
                 ghostStructure = Instantiate(Prefabs.Instance.structureModels[data.modelIndex], pos, direction.Quaternion, transform);
             } else {
