@@ -64,11 +64,19 @@ public class WaveManager : Singleton<WaveManager>
     }
 
     public void FinishTravellerPath(Enemy enemy) {
+        GameManager.Instance.ModifyLives(-1);
+        RemoveEnemy(enemy);
+    }
+
+    public void RemoveEnemy(Enemy enemy) {
         livingEnemies.Remove(enemy);
         if (livingEnemies.Count == 0 && !spawningInProgress) {
             OnRoundInProgress?.Invoke(false);
         }
-        GameManager.Instance.ModifyLives(-1);
+    }
+
+    public List<Enemy> GetLivingEnemies() {
+        return new List<Enemy>(livingEnemies);
     }
 
 }

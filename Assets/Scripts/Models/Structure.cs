@@ -11,7 +11,7 @@ public class Structure {
     private List<Tile> occupiedTiles = new List<Tile>();
 
     public Structure(DataStructure data, Tile originTile, Direction direction, Vector3 position) {
-
+        this.data = data;
         this.position = position;
 
         var half = (Constants.BLOCK_SIZE - 1) / 2;
@@ -28,7 +28,7 @@ public class Structure {
 
         if (data.action != StructureAction.beacon && data.action != StructureAction.shrine)
         {
-            var tower = new Tower(this, data);
+            var tower = new Tower(this);
         }        
     }
    

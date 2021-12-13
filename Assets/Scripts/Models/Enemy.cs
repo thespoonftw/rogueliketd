@@ -10,6 +10,7 @@ public class Enemy {
     public Tile NextTile { get; private set; }
     public float CurrentHealth { get; private set; }
     public Vector3 CurrentPosition { get; private set; }
+    public bool IsAlive { get; private set; }
 
     public readonly float speed;
     public readonly float maxHealth;
@@ -47,6 +48,7 @@ public class Enemy {
 
     private void UpdatePosition() {
         if (NextTile == null) {
+            IsAlive = false;
             WaveManager.Instance.FinishTravellerPath(this);
             OnDeath.Invoke();            
         } else {
@@ -62,6 +64,17 @@ public class Enemy {
         PrevTile = NextTile;
         NextTile = NextTile.GetNextPath(prev);
         OnTileChange?.Invoke();
+    }
+
+    public void Damage(int amount) {
+        CurrentHealth -= amount;
+        if (CurrentHealth <= 0) {
+            WaveManager.Instance.RemoveEnemy(this);
+            IsAlive = false;
+            OnDeath?.Invoke();
+        } else {
+            OnHealthChange?.Invoke();
+        }        
     }
     
 }

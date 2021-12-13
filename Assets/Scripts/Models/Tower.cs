@@ -6,21 +6,25 @@ using UnityEngine;
 
 public class Tower {
 
-    private Structure structure;
+    public readonly Structure structure;
+    public DataStructure data => structure.data;
+
+    public int Damage { get; private set; }
+
     private Enemy currentTarget;
     private int range;
     private float attackRate;
     private float oneOverAttackRate;
-    private DataStructure data;
     private float timeSinceLastAttack;
+    private WaveManager waveManager;
 
-    public Tower(Structure structure, DataStructure data) {
+    public Tower(Structure structure) {
         this.structure = structure;
-        this.data = data;
         attackRate = data.rate;
         oneOverAttackRate = 1f / attackRate;
-        //isRangedAttacker = (structure.data.type == StructureType.towerMelee);
+        Damage = 1; // placeholder
         StructureUpdateManager.Instance.AddTower(this);
+        waveManager = WaveManager.Instance;
     }
 
     public void Tick(float deltaTime) {
@@ -28,21 +32,25 @@ public class Tower {
         if (timeSinceLastAttack > oneOverAttackRate) { return; }
         timeSinceLastAttack -= oneOverAttackRate;
 
-        var enemiesWithinRange = GetEnemiesWithinRange();
-        if (enemiesWithinRange.Count == 0) {
-            currentTarget = null;
-            return; 
-        }
-
-        if (!enemiesWithinRange.Contains(currentTarget)) {
+        if (!IsTargetValid()) {
+            var enemiesWithinRange = GetEnemiesWithinRange();
+            if (enemiesWithinRange.Count == 0) { return; }
             currentTarget = enemiesWithinRange[0];
         }
+        if (currentTarget == null) { return; }
 
         AttackEnemy(currentTarget);
     }
 
+    private bool IsTargetValid() {
+        if (currentTarget == null) { return false; }
+        if (!currentTarget.IsAlive) { return false; }
+        return Vector3.Distance(structure.position, currentTarget.CurrentPosition) < data.range;
+    }
+
     private List<Enemy> GetEnemiesWithinRange() {
-        return null;
+        var enemies = waveManager.GetLivingEnemies();
+        return enemies.Where(e => Vector3.Distance(structure.position, e.CurrentPosition) < data.range).ToList();
     }
 
     private void AttackEnemy(Enemy enemy) {
