@@ -14,7 +14,7 @@ public class Projectile {
     private Tower source;
     private Enemy target;
     private int damage;
-    private float speed = 0.1f;
+    private float speed = 0.3f;
     private Vector3 lastEnemyPosition;
 
     public Projectile(Tower source, Enemy target, int damage) {

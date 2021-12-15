@@ -11,50 +11,34 @@ public class Tower {
 
     public int Damage { get; private set; }
 
-    private Enemy currentTarget;
-    private int range;
     private float attackRate;
     private float oneOverAttackRate;
     private float timeSinceLastAttack;
-    private WaveManager waveManager;
+
+    private TowerAttack towerAttack;
 
     public Tower(Structure structure) {
         this.structure = structure;
         attackRate = data.rate;
         oneOverAttackRate = 1f / attackRate;
-        Damage = 1; // placeholder
+        Damage = data.damage; // placeholder
         StructureUpdateManager.Instance.AddTower(this);
-        waveManager = WaveManager.Instance;
+        
+
+        switch (structure.data.action) {
+            case StructureAction.nova: towerAttack = new TowerAttackNova(this); break;
+            case StructureAction.bomb: towerAttack = new TowerAttackArc(this); break;
+            case StructureAction.boulder: towerAttack = new TowerAttackTrap(this, 1, 3, 1); break;
+            default: towerAttack = new TowerAttackStandard(this); break;
+        }
+
     }
 
     public void Tick(float deltaTime) {
         timeSinceLastAttack += deltaTime;
-        if (timeSinceLastAttack > oneOverAttackRate) { return; }
+        if (timeSinceLastAttack < oneOverAttackRate) { return; }
         timeSinceLastAttack -= oneOverAttackRate;
-
-        if (!IsTargetValid()) {
-            var enemiesWithinRange = GetEnemiesWithinRange();
-            if (enemiesWithinRange.Count == 0) { return; }
-            currentTarget = enemiesWithinRange[0];
-        }
-        if (currentTarget == null) { return; }
-
-        AttackEnemy(currentTarget);
-    }
-
-    private bool IsTargetValid() {
-        if (currentTarget == null) { return false; }
-        if (!currentTarget.IsAlive) { return false; }
-        return Vector3.Distance(structure.position, currentTarget.CurrentPosition) < data.range;
-    }
-
-    private List<Enemy> GetEnemiesWithinRange() {
-        var enemies = waveManager.GetLivingEnemies();
-        return enemies.Where(e => Vector3.Distance(structure.position, e.CurrentPosition) < data.range).ToList();
-    }
-
-    private void AttackEnemy(Enemy enemy) {
-        ProjectileManager.Instance.ShootProjectile(this, enemy);
+        towerAttack.TryAttack();
     }
     
 }

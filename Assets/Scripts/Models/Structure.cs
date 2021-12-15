@@ -7,12 +7,14 @@ public class Structure {
 
     public readonly DataStructure data;
     public readonly Vector3 position;
+    public readonly Direction direction;
 
     private List<Tile> occupiedTiles = new List<Tile>();
 
     public Structure(DataStructure data, Tile originTile, Direction direction, Vector3 position) {
         this.data = data;
         this.position = position;
+        this.direction = direction;
 
         var half = (Constants.BLOCK_SIZE - 1) / 2;
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {

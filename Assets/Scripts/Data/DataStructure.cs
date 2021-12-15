@@ -51,6 +51,7 @@ public class DataStructure : CsvDataEntry {
     public readonly float range;
     public readonly bool isEvenWidth;
     public readonly float rate;
+    public readonly int damage;
 
     public DataStructure(List<string> line) {
         name = line[0];
@@ -66,6 +67,7 @@ public class DataStructure : CsvDataEntry {
         range = float.Parse(line[10]);
         isEvenWidth = Tools.ParseBool(line[11]);
         rate = float.Parse(line[12]);
+        damage = int.Parse(line[13]);
 
         var placementMap = ImageMaps.GetStructureMap(pathIndex);
         for (int x = 0; x < Constants.BLOCK_SIZE; x++) {
