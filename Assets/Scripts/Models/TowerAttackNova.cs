@@ -9,9 +9,11 @@ public class TowerAttackNova : TowerAttack {
 
     }
 
-    public override void TryAttack() {
+    public override bool TryAttack() {
         var enemiesWithinRange = GetEnemiesWithinRange();
+        if (enemiesWithinRange.Count == 0) { return false; }
         enemiesWithinRange.ForEach(e => AttackEnemy(e));
+        return true;
     }
     
 }

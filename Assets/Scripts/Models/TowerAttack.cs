@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public abstract class TowerAttack {
+public class TowerAttack {
 
     protected DataStructure data;
     protected Structure structure;
@@ -19,7 +19,22 @@ public abstract class TowerAttack {
         data = structure.data;
     }
 
-    public abstract void TryAttack();
+    public virtual bool TryAttack() {
+        if (!IsCurrentTargetWithinRange()) {
+            var enemiesWithinRange = GetEnemiesWithinRange();
+            if (enemiesWithinRange.Count == 0) { return false; }
+            currentTarget = enemiesWithinRange[0];
+        }
+        if (currentTarget == null) { return false; }
+        AttackEnemy(currentTarget);
+        return true;
+    }
+
+    protected bool IsCurrentTargetWithinRange() {
+        if (currentTarget == null) { return false; }
+        if (!currentTarget.IsAlive) { return false; }
+        return IsEnemyWithinRange(currentTarget);
+    }
 
     protected List<Enemy> GetEnemiesWithinRange() {
         var enemies = waveManager.GetLivingEnemies();

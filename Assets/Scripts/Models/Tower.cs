@@ -29,9 +29,8 @@ public class Tower {
             case StructureAction.nova: towerAttack = new TowerAttackNova(this); break;
             case StructureAction.bomb: towerAttack = new TowerAttackArc(this); break;
             case StructureAction.boulder: towerAttack = new TowerAttackTrap(this, 1, 3, 1); break;
-            default: towerAttack = new TowerAttackStandard(this); break;
+            default: towerAttack = new TowerAttack(this); break;
         }
-
     }
 
     public void Tick(float deltaTime) {

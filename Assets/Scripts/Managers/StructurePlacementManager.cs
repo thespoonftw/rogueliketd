@@ -26,7 +26,7 @@ public class StructurePlacementManager : Singleton<StructurePlacementManager>
     public void StartPlacingStructure(DataStructure placingStructure) {
         this.structureData = placingStructure;
         isPlacingStructureEnabled = true;
-        currentDirection = new Direction();
+        currentDirection = new Direction(DirectionValue.south);
         rotateText.SetActive(placingStructure.isRotatable);
         Raycaster.SetMode(RaycastMode.tiles);
     }

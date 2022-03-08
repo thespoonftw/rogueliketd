@@ -31,4 +31,8 @@ public struct Coords {
         }
     }
 
+    public override string ToString() {
+        return x + "," + z;
+    }
+
 }

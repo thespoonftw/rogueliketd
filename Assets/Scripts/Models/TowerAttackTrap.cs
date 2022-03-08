@@ -16,13 +16,16 @@ public class TowerAttackTrap : TowerAttack {
         this.offset = offset;
     }
 
-    public override void TryAttack() {
-        
-    }
-
-    private bool IsEnemyWithinSquare(Enemy enemy) {
-
+    public override bool TryAttack() {
+        var targets = GetEnemiesWithinSquare();
+        if (targets.Count == 0) { return false; }
+        targets.ForEach(t => AttackEnemy(t));
         return true;
     }
 
+    public List<Enemy> GetEnemiesWithinSquare() {
+        var targetTile = tower.structure.originTile.GetAdjacentTile(tower.structure.direction);
+        Debug.Log(targetTile.coords.ToString());
+        return targetTile.GetEnemies();
+    }
 }

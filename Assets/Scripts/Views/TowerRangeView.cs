@@ -33,10 +33,10 @@ public class TowerRangeView : MonoBehaviour {
         lineRender.enabled = true;
         lineRender.positionCount = 5;
         var centre = tile.position + new Vector3(0, 0.1f, 0);
-        var v1 = direction.GetVectorAfterRotation(new Vector3(-0.5f + width, 0, 0.5f - offset));
-        var v2 = direction.GetVectorAfterRotation(new Vector3(-0.5f + width, 0, 0.5f - offset - length));
-        var v3 = direction.GetVectorAfterRotation(new Vector3(-0.5f,         0, 0.5f - offset - length));
-        var v4 = direction.GetVectorAfterRotation(new Vector3(-0.5f,         0, 0.5f - offset));
+        var v1 = direction.GetVectorAfterRotation(new Vector3(-0.5f + width, 0, -0.5f + offset));
+        var v2 = direction.GetVectorAfterRotation(new Vector3(-0.5f + width, 0, -0.5f + offset + length));
+        var v3 = direction.GetVectorAfterRotation(new Vector3(-0.5f,         0, -0.5f + offset + length));
+        var v4 = direction.GetVectorAfterRotation(new Vector3(-0.5f,         0,- 0.5f + offset));
         lineRender.SetPosition(0, centre + v1);
         lineRender.SetPosition(1, centre + v2);
         lineRender.SetPosition(2, centre + v3);
@@ -70,7 +70,7 @@ public class TowerRangeView : MonoBehaviour {
         for (int i = 0; i < numberOfPoints; i++) {
             var half = numberOfPoints / 2f;
             var yAngle = (angleBetweenPoints * (i - half)) + direction.YAngle;            
-            var pos = centre + Quaternion.Euler(0, yAngle, 0) * (data.range * Vector3.back);
+            var pos = centre + Quaternion.Euler(0, yAngle, 0) * (data.range * Vector3.forward);
             lineRender.SetPosition(i + 1, pos);
         }
         lineRender.SetPosition(numberOfPoints + 1, centre);

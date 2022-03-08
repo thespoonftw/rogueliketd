@@ -10,15 +10,15 @@ public class TowerAttackArc : TowerAttack {
           
     }
 
-    public override void TryAttack() {
+    public override bool TryAttack() {
         if (!IsCurrentTargetWithinArc()) {
             var enemiesWithinRange = GetEnemiesWithinArc();
-            if (enemiesWithinRange.Count == 0) { return; }
+            if (enemiesWithinRange.Count == 0) { return false; }
             currentTarget = enemiesWithinRange[0];
         }
-        if (currentTarget == null) { return; }
-
+        if (currentTarget == null) { return false; }
         AttackEnemy(currentTarget);
+        return true;
     }
 
     private bool IsCurrentTargetWithinArc() {
@@ -34,7 +34,7 @@ public class TowerAttackArc : TowerAttack {
 
     private bool IsEnemyWithinArc(Enemy enemy) {
         var vectorToEnemy = enemy.CurrentPosition - structure.position;
-        var forward = structure.direction.GetVectorAfterRotation(Vector3.back);
+        var forward = structure.direction.GetVectorAfterRotation(Vector3.forward);
         var angle = Vector3.SignedAngle(vectorToEnemy, forward, Vector3.up);
         return (Mathf.Abs(angle) < Constants.BOMB_ARC / 2f);
     }

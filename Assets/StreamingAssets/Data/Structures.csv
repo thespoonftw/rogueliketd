@@ -30,7 +30,7 @@ fragmentation tower,upgrade,50,7,5,bomb,normal,obsidian,,TRUE,10,TRUE,0.5,12
 solar tower,single,50,0,0,ranged,heat,sunlight,,,5,,1,8
 tar sprayer,single,50,0,0,ranged,heat,tar,,,5,,1,12
 swinging blade,single,50,5,4,swing,normal,obsidian,,TRUE,5,,1,12
-spinning blade,single,50,2,0,nova,normal,obsidian,,,1.5,,2,4
+spinning blade,single,50,2,0,nova,normal,obsidian,,,1.5,,2,1
 dousing tower,single,50,0,0,ranged,normal,water,,,5,,1,8
 telekenetic tower,single,50,0,0,ranged,normal,crystal,,,5,,1,8
 scald trap,duo,100,0,0,cone,heat,water,tar,,5,,1,8
